@@ -11,7 +11,12 @@ drop policy if exists "Users can view own profile" on public.profiles;
 create policy "Users can view own profile" on public.profiles for select to authenticated using (auth.uid() = id);
 drop policy if exists "Users can update own profile" on public.profiles;
 create policy "Users can update own profile" on public.profiles for update to authenticated using (auth.uid() = id) with check (auth.uid() = id);
-grant select, update on public.profiles to authenticated;
+drop policy if exists "Users can insert own profile" on public.profiles;
+create policy "Users can insert own profile" on public.profiles for insert to authenticated with check (auth.uid() = id);
+insert into public.profiles (id, full_name)
+select id, coalesce(raw_user_meta_data ->> 'full_name', '') from auth.users
+on conflict (id) do nothing;
+grant select, insert, update on public.profiles to authenticated;
 
 create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer set search_path = public as $$
