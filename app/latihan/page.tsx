@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
-import { ArrowLeft, ArrowRight, CheckCircle2, Clock3, Flag, LoaderCircle, RotateCcw } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2, Clock3, LoaderCircle, RotateCcw } from "lucide-react";
 
 type Question={id:string;category:"TWK"|"TIU"|"TKP";topic:string;question:string;options:string[];correct_answer:string;explanation:string};
 const LETTERS=["A","B","C","D","E"];
