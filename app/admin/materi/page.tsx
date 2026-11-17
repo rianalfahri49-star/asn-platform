@@ -3,7 +3,7 @@ import Link from "next/link";
 import {FormEvent,useEffect,useMemo,useState} from "react";
 import {createBrowserClient} from "@supabase/ssr";
 import type {User} from "@supabase/supabase-js";
-import {ArrowLeft,BookOpen,LogOut,Plus,Trash2} from "lucide-react";
+import {ArrowLeft,BookOpen,LogOut,Trash2} from "lucide-react";
 type Material={id:string;title:string;category:string;summary:string;content:string;is_published:boolean};
 const blank={title:"",category:"TWK",summary:"",content:"",is_published:false};
 export default function AdminMateriPage(){
