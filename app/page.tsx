@@ -25,12 +25,15 @@ export default function Home() {
           </Link>
           <nav className="hidden items-center gap-8 text-sm font-semibold text-slate-600 md:flex">
             <a href="#program" className="transition hover:text-blue-600">Program</a>
+            <Link href="/materi" className="transition hover:text-blue-600">Materi</Link>
+            <Link href="/latihan" className="transition hover:text-blue-600">Latihan</Link>
+            <Link href="/paket" className="transition hover:text-blue-600">Paket</Link>
             <a href="#fitur" className="transition hover:text-blue-600">Fitur</a>
             <a href="#tentang" className="transition hover:text-blue-600">Tentang</a>
           </nav>
           <div className="flex items-center gap-3">
-            <Link href="#program" className="hidden rounded-xl px-4 py-2.5 text-sm font-bold text-blue-700 transition hover:bg-blue-50 sm:inline-flex">Jelajahi</Link>
-            <Link href="#program" className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-600/20 transition hover:-translate-y-0.5 hover:bg-blue-700">Mulai belajar <ArrowRight size={16} /></Link>
+            <Link href="/masuk" className="hidden rounded-xl px-4 py-2.5 text-sm font-bold text-blue-700 transition hover:bg-blue-50 sm:inline-flex">Masuk</Link>
+            <Link href="/latihan" className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-600/20 transition hover:-translate-y-0.5 hover:bg-blue-700">Mulai belajar <ArrowRight size={16} /></Link>
           </div>
         </div>
       </header>
@@ -89,7 +92,7 @@ export default function Home() {
       </section>
 
       <section id="tentang" className="container py-20 sm:py-24">
-        <div className="rounded-[2rem] bg-gradient-to-br from-blue-700 to-blue-950 px-7 py-12 text-center text-white sm:px-14 sm:py-16"><span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-white/15"><Sparkles size={26} /></span><h2 className="mx-auto mt-6 max-w-2xl text-3xl font-black tracking-tight sm:text-4xl">Mulai persiapanmu hari ini.</h2><p className="mx-auto mt-4 max-w-xl leading-7 text-blue-100">Bangun kebiasaan belajar yang konsisten. Siapkan diri dengan lebih percaya diri, satu sesi latihan dalam satu waktu.</p><Link href="#program" className="mt-8 inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3.5 text-sm font-extrabold text-blue-700 transition hover:-translate-y-0.5 hover:bg-blue-50">Jelajahi program <ArrowRight size={17} /></Link></div>
+        <div className="rounded-[2rem] bg-gradient-to-br from-blue-700 to-blue-950 px-7 py-12 text-center text-white sm:px-14 sm:py-16"><span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-white/15"><Sparkles size={26} /></span><h2 className="mx-auto mt-6 max-w-2xl text-3xl font-black tracking-tight sm:text-4xl">Mulai persiapanmu hari ini.</h2><p className="mx-auto mt-4 max-w-xl leading-7 text-blue-100">Bangun kebiasaan belajar yang konsisten. Siapkan diri dengan lebih percaya diri, satu sesi latihan dalam satu waktu.</p><Link href="/latihan" className="mt-8 inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3.5 text-sm font-extrabold text-blue-700 transition hover:-translate-y-0.5 hover:bg-blue-50">Mulai latihan <ArrowRight size={17} /></Link></div>
       </section>
 
       <footer className="border-t border-slate-200 bg-white">
