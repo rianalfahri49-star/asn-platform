@@ -1,9 +1,16 @@
-# ASN Platform
+# LolosCPNS
 
-Platform belajar dan simulasi ujian persiapan ASN untuk CPNS dan PPPK.
+Platform belajar independen untuk persiapan seleksi CPNS dan PPPK.
 
-> ASN Platform adalah platform belajar independen dan bukan situs resmi pemerintah atau BKN.
+> LolosCPNS bukan situs resmi pemerintah, BKN, atau instansi penyelenggara seleksi. Informasi resmi seleksi tetap merujuk pada pengumuman instansi terkait.
 
-## Status
+## Teknologi
 
-Tahap awal pengembangan. Rencana fitur mencakup simulasi CAT, bank soal, pembahasan, akun pengguna, dan dashboard admin.
+- Next.js App Router + TypeScript
+- Tailwind CSS
+- Supabase (rencana integrasi autentikasi dan database)
+- Vercel untuk deployment
+
+## Status pengembangan
+
+Saat ini website berisi halaman pengenalan program CPNS, PPPK, dan simulasi CAT. Fitur akun, bank soal, pembahasan, penyimpanan hasil, serta dashboard admin masih dalam tahap pengembangan.
