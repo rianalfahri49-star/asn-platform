@@ -15,14 +15,7 @@ export async function POST(request:Request){
  const status=body.transaction_status;
  const mapped=status==="settlement"||(status==="capture"&&body.fraud_status==="accept")?"paid":status==="expire"?"expired":status==="cancel"||status==="deny"?"failed":null;
  if(!mapped)return NextResponse.json({received:true});
- const {data:order,error}=await supabase.from("payment_orders").update({status:mapped,paid_at:mapped==="paid"?new Date().toISOString():null,provider_payload:body}).eq("order_id",body.order_id).eq("status","pending").select("user_id,package_id").maybeSingle();
- if(error)return NextResponse.json({error:"Gagal memperbarui status pesanan."},{status:500});
- if(order&&mapped==="paid"){
-  const duration=order.package_id==="premium_yearly"?365:30;
-  const {data:current}=await supabase.from("user_subscriptions").select("ends_at").eq("user_id",order.user_id).eq("status","active").gt("ends_at",new Date().toISOString()).order("ends_at",{ascending:false}).limit(1).maybeSingle();
-  const startsAt=current?.ends_at&&new Date(current.ends_at)>new Date()?new Date(current.ends_at):new Date();
-  const ends=new Date(startsAt.getTime()+duration*86400000).toISOString();
-  await supabase.from("user_subscriptions").insert({user_id:order.user_id,package_id:order.package_id,status:"active",ends_at:ends});
- }
+ const {error}=await supabase.rpc("apply_payment_notification",{p_order_id:body.order_id,p_status:mapped,p_payload:body});
+ if(error)return NextResponse.json({error:"Gagal memproses notifikasi pembayaran."},{status:500});
  return NextResponse.json({received:true});
 }
