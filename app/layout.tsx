@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "ASN Platform — Persiapan CPNS & PPPK",
-  description: "Belajar lebih terarah dan latihan simulasi CAT untuk persiapan seleksi CPNS dan PPPK.",
-  applicationName: "ASN Platform",
+  title: "LolosCPNS — Persiapan CPNS & PPPK",
+  description: "Platform belajar independen untuk persiapan CPNS dan PPPK melalui materi, latihan soal, dan simulasi CAT.",
+  applicationName: "LolosCPNS",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
