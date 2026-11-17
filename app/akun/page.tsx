@@ -5,7 +5,8 @@ import { useEffect, useMemo, useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
 import { ArrowLeft, BookOpen, Crown, LogOut, Target, Trophy } from "lucide-react";
 
-type Attempt={id:string;title:string;category:string;total_questions:number;correct_answers:number;score:number;duration_seconds:number;completed_at:string};\ntype Order={id:string;order_id:string;package_id:string;amount:number;status:string;created_at:string};
+type Attempt={id:string;title:string;category:string;total_questions:number;correct_answers:number;score:number;duration_seconds:number;completed_at:string};
+type Order={id:string;order_id:string;package_id:string;amount:number;status:string;created_at:string};
 export default function AkunPage(){
  const supabase=useMemo(()=>{const u=process.env.NEXT_PUBLIC_SUPABASE_URL,k=process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;return u&&k?createBrowserClient(u,k):null;},[]);
  const [name,setName]=useState("");const [email,setEmail]=useState("");const [leaderboard,setLeaderboard]=useState(false);const [attempts,setAttempts]=useState<Attempt[]>([]);const [orders,setOrders]=useState<Order[]>([]);const [premium,setPremium]=useState(false);const [message,setMessage]=useState("Memuat akun...");
