@@ -2,14 +2,12 @@
 
 import Link from "next/link";
 import { FormEvent, useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@supabase/ssr";
 import { GraduationCap, LoaderCircle } from "lucide-react";
 
 export default function MasukPage() {
   const router = useRouter();
-  const params = useSearchParams();
-  const next = params.get("next") || "/akun";
   const supabase = useMemo(() => {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -29,7 +27,9 @@ export default function MasukPage() {
       const {error}=await supabase.auth.signInWithPassword({email,password});
       setBusy(false);
       if(error){setMessage(error.message);return;}
-      router.push(next); router.refresh();
+      const requested=new URLSearchParams(window.location.search).get("next")||"/akun";
+      const destination=requested.startsWith("/")&&!requested.startsWith("//")?requested:"/akun";
+      router.push(destination); router.refresh();
     } else {
       const {data,error}=await supabase.auth.signUp({email,password,options:{data:{full_name:name}}});
       setBusy(false);
