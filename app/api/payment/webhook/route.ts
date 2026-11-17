@@ -13,7 +13,7 @@ export async function POST(request:Request){
  const received=body.signature_key||"";if(received.length!==expected.length||!timingSafeEqual(Buffer.from(received),Buffer.from(expected)))return NextResponse.json({error:"Signature tidak valid."},{status:401});
  const supabase=createClient(url,serviceKey);
  const status=body.transaction_status;
- const mapped=status==="settlement"||status==="capture"?"paid":status==="expire"?"expired":status==="cancel"||status==="deny"?"failed":null;
+ const mapped=status==="settlement"||(status==="capture"&&body.fraud_status==="accept")?"paid":status==="expire"?"expired":status==="cancel"||status==="deny"?"failed":null;
  if(!mapped)return NextResponse.json({received:true});
  const {data:order,error}=await supabase.from("payment_orders").update({status:mapped,paid_at:mapped==="paid"?new Date().toISOString():null,provider_payload:body}).eq("order_id",body.order_id).eq("status","pending").select("user_id,package_id").maybeSingle();
  if(error)return NextResponse.json({error:"Gagal memperbarui status pesanan."},{status:500});
