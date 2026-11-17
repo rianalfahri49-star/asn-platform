@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "LolosCPNS — Persiapan CPNS & PPPK",
+  title: "SuksesCPNS — Persiapan CPNS & PPPK",
   description: "Platform belajar independen untuk persiapan CPNS dan PPPK melalui materi, latihan soal, dan simulasi CAT.",
-  applicationName: "LolosCPNS",
+  applicationName: "SuksesCPNS",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
