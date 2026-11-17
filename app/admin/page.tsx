@@ -8,7 +8,7 @@ import { BookOpen, Download, LogOut, Search, Trash2, Upload, X } from "lucide-re
 type Category = "TWK" | "TIU" | "TKP";
 type Question = { id: string; category: Category; topic: string; question: string; options: string[]; correct_answer: string; explanation: string; is_published: boolean; is_premium: boolean; };
 const emptyForm = { category: "TWK" as Category, topic: "", question: "", options: ["","","","",""], correct_answer: "A", explanation: "", is_published: false, is_premium: false };
-const csvTemplate = "category,topic,question,option_a,option_b,option_c,option_d,option_e,correct_answer,explanation,is_published\nTWK,Pancasila,Contoh pertanyaan?,Pilihan A,Pilihan B,Pilihan C,Pilihan D,Pilihan E,A,Pembahasan contoh,true";
+const csvTemplate = "category,topic,question,option_a,option_b,option_c,option_d,option_e,correct_answer,explanation,is_published,is_premium\nTWK,Pancasila,Contoh pertanyaan?,Pilihan A,Pilihan B,Pilihan C,Pilihan D,Pilihan E,A,Pembahasan contoh,true,false";
 
 export default function AdminPage() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
