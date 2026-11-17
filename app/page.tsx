@@ -28,6 +28,7 @@ export default function Home() {
             <Link href="/materi" className="transition hover:text-blue-600">Materi</Link>
             <Link href="/latihan" className="transition hover:text-blue-600">Latihan</Link>
             <Link href="/paket" className="transition hover:text-blue-600">Paket</Link>
+            <Link href="/peringkat" className="transition hover:text-blue-600">Peringkat</Link>
             <a href="#fitur" className="transition hover:text-blue-600">Fitur</a>
             <a href="#tentang" className="transition hover:text-blue-600">Tentang</a>
           </nav>
