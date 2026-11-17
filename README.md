@@ -50,4 +50,4 @@ npm run dev
 ## Konfigurasi pembayaran
 Tambahkan URL `https://suksescpns.vercel.app/reset-password` ke daftar Redirect URLs yang diizinkan di Supabase Auth. Tambahkan variabel server-only `MIDTRANS_SERVER_KEY`, `MIDTRANS_IS_PRODUCTION` (`false` untuk sandbox, `true` untuk production), serta `SUPABASE_SERVICE_ROLE_KEY`. Variabel publik `NEXT_PUBLIC_SUPABASE_URL` dan `NEXT_PUBLIC_SUPABASE_ANON_KEY` tetap diperlukan. Atur URL notifikasi Midtrans ke `https://suksescpns.vercel.app/api/payment/webhook`. Jangan pernah menaruh service role key atau server key Midtrans pada variabel berawalan `NEXT_PUBLIC_`.
 
-Jalankan migration secara berurutan: `202611170001_bank_soal.sql`, `202611170002_platform_core.sql`, `202611170003_premium_access.sql`, lalu `202611170004_seed_starter_content.sql`.
+Jalankan migration secara berurutan: `202611170001_bank_soal.sql`, `202611170002_platform_core.sql`, `202611170003_premium_access.sql`, `202611170004_seed_starter_content.sql`, lalu `202611170005_payment_atomic.sql`.
