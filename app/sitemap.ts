@@ -1,2 +1,2 @@
 import type { MetadataRoute } from "next";
-export default function sitemap():MetadataRoute.Sitemap{const base="https://suksescpns.vercel.app";return ["","/materi","/latihan","/simulasi","/paket","/masuk","/peringkat","/kebijakan-privasi","/syarat-ketentuan"].map(path=>({url:base+path,lastModified:new Date(),changeFrequency:path===""?"weekly":"monthly",priority:path===""?1:0.7}));}
+export default function sitemap():MetadataRoute.Sitemap{const base="https://suksescpns.vercel.app";return ["","/materi","/latihan","/simulasi","/paket","/masuk","/lupa-password","/peringkat","/kebijakan-privasi","/syarat-ketentuan"].map(path=>({url:base+path,lastModified:new Date(),changeFrequency:path===""?"weekly":"monthly",priority:path===""?1:0.7}));}
