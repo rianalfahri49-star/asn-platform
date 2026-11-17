@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
-import { ArrowLeft, BookOpen, Clock3, Crown, LogOut, Target, Trophy } from "lucide-react";
+import { ArrowLeft, BookOpen, Crown, LogOut, Target, Trophy } from "lucide-react";
 
 type Attempt={id:string;title:string;category:string;total_questions:number;correct_answers:number;score:number;duration_seconds:number;completed_at:string};
 export default function AkunPage(){
