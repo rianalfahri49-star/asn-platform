@@ -6,7 +6,6 @@ export const metadata: Metadata = {
   description: "Platform belajar independen untuk persiapan CPNS dan PPPK melalui materi, latihan soal, dan simulasi CAT.",
   applicationName: "SuksesCPNS",
   metadataBase: new URL("https://suksescpns.vercel.app"),
-  alternates: { canonical: "/" },
   openGraph: { title: "SuksesCPNS — Persiapan CPNS & PPPK", description: "Belajar materi, latihan soal, dan simulasi CAT dalam satu platform.", url: "https://suksescpns.vercel.app", siteName: "SuksesCPNS", locale: "id_ID", type: "website" },
   twitter: { card: "summary_large_image", title: "SuksesCPNS — Persiapan CPNS & PPPK", description: "Platform belajar independen untuk persiapan seleksi ASN." },
 };
