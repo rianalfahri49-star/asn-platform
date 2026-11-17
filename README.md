@@ -28,6 +28,8 @@ Platform belajar independen untuk persiapan seleksi CPNS dan PPPK.
    - `supabase/migrations/202611170003_premium_access.sql`
    - `supabase/migrations/202611170004_seed_starter_content.sql`
    - `supabase/migrations/202611170005_payment_atomic.sql`
+   - `supabase/migrations/202611170006_admin_transactions.sql`
+   - `supabase/migrations/202611170007_seed_pppk_materials.sql`
 3. Tambahkan environment variables di Vercel:
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
