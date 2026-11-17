@@ -27,6 +27,6 @@ export async function POST(request:Request){
  const response=await fetch(midtransBase+"/snap/v1/transactions",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Basic "+Buffer.from(serverKey+":").toString("base64")},body:JSON.stringify({transaction_details:{order_id:orderId,gross_amount:selected.amount},item_details:[{id:packageId,price:selected.amount,quantity:1,name:selected.name}],customer_details:{email:user.email},callbacks:{finish:origin+"/akun"}})});
  const payload=await response.json().catch(()=>({}));
  if(!response.ok||!payload.redirect_url){await adminDb.from("payment_orders").update({status:"failed",provider_payload:payload}).eq("id",order.id);return NextResponse.json({error:"Penyedia pembayaran gagal membuat transaksi."},{status:502});}
- await supabase.from("payment_orders").update({payment_url:payload.redirect_url,provider_payload:{token:payload.token}}).eq("id",order.id);
+ await adminDb.from("payment_orders").update({payment_url:payload.redirect_url,provider_payload:{token:payload.token}}).eq("id",order.id);
  return NextResponse.json({orderId,redirectUrl:payload.redirect_url});
 }
