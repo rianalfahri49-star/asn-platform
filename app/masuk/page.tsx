@@ -50,7 +50,7 @@ export default function MasukPage() {
         {message&&<p role="status" className="rounded-xl bg-blue-50 p-3 text-sm text-blue-800">{message}</p>}
         <button disabled={busy} className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3.5 font-bold text-white transition hover:bg-blue-700 disabled:opacity-60">{busy&&<LoaderCircle className="animate-spin" size={18}/>} {mode==="login"?"Masuk":"Daftar sekarang"}</button>
       </form>
-      <p className="mt-6 text-center text-sm text-slate-500">{mode==="login"?"Belum punya akun?":"Sudah punya akun?"} <button onClick={()=>{setMode(mode==="login"?"signup":"login");setMessage("");}} className="font-bold text-blue-700">{mode==="login"?"Daftar":"Masuk"}</button></p>
+      <Link href="/lupa-password" className="mt-4 block text-right text-sm font-semibold text-blue-700">Lupa password?</Link><p className="mt-6 text-center text-sm text-slate-500">{mode==="login"?"Belum punya akun?":"Sudah punya akun?"} <button onClick={()=>{setMode(mode==="login"?"signup":"login");setMessage("");}} className="font-bold text-blue-700">{mode==="login"?"Daftar":"Masuk"}</button></p>
       <Link href="/" className="mt-5 block text-center text-sm text-slate-400 hover:text-blue-700">Kembali ke beranda</Link>
     </section>
   </main>;
