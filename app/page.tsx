@@ -19,9 +19,9 @@ export default function Home() {
     <main className="overflow-hidden">
       <header className="relative z-10 border-b border-blue-100/80 bg-white/90 backdrop-blur">
         <div className="container flex h-[76px] items-center justify-between">
-          <Link href="/" className="flex items-center gap-3" aria-label="LolosCPNS beranda">
+          <Link href="/" className="flex items-center gap-3" aria-label="SuksesCPNS beranda">
             <span className="grid h-10 w-10 place-items-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-600/20"><GraduationCap size={23} /></span>
-            <span className="text-lg font-extrabold tracking-tight text-slate-900">Lolos<span className="text-blue-600">CPNS</span></span>
+            <span className="text-lg font-extrabold tracking-tight text-slate-900">Sukses<span className="text-blue-600">CPNS</span></span>
           </Link>
           <nav className="hidden items-center gap-8 text-sm font-semibold text-slate-600 md:flex">
             <a href="#program" className="transition hover:text-blue-600">Program</a>
@@ -83,7 +83,7 @@ export default function Home() {
 
       <section id="fitur" className="bg-slate-50 py-20 sm:py-24">
         <div className="container grid gap-12 lg:grid-cols-[.85fr_1.15fr] lg:items-center">
-          <div><p className="text-xs font-extrabold uppercase tracking-[.2em] text-blue-600">Kenapa LolosCPNS</p><h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">Belajar dengan strategi, bukan sekadar menghafal.</h2><p className="mt-5 leading-7 text-slate-600">Persiapan seleksi membutuhkan latihan yang konsisten. Gunakan platform ini untuk membangun rutinitas belajar dan mengevaluasi kemajuanmu.</p><Link href="#tentang" className="mt-7 inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-blue-700">Tentang platform <ArrowRight size={16} /></Link></div>
+          <div><p className="text-xs font-extrabold uppercase tracking-[.2em] text-blue-600">Kenapa SuksesCPNS</p><h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">Belajar dengan strategi, bukan sekadar menghafal.</h2><p className="mt-5 leading-7 text-slate-600">Persiapan seleksi membutuhkan latihan yang konsisten. Gunakan platform ini untuk membangun rutinitas belajar dan mengevaluasi kemajuanmu.</p><Link href="#tentang" className="mt-7 inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-blue-700">Tentang platform <ArrowRight size={16} /></Link></div>
           <div className="grid gap-4 sm:grid-cols-2">{features.map(({icon: Icon,title,text}) => <div key={title} className="rounded-2xl border border-slate-200 bg-white p-6"><span className="grid h-11 w-11 place-items-center rounded-xl bg-blue-50 text-blue-600"><Icon size={21} /></span><h3 className="mt-4 font-extrabold text-slate-900">{title}</h3><p className="mt-2 text-sm leading-6 text-slate-600">{text}</p></div>)}</div>
         </div>
       </section>
@@ -93,7 +93,7 @@ export default function Home() {
       </section>
 
       <footer className="border-t border-slate-200 bg-white">
-        <div className="container flex flex-col gap-5 py-8 sm:flex-row sm:items-center sm:justify-between"><Link href="/" className="flex items-center gap-2 font-extrabold text-slate-900"><span className="grid h-8 w-8 place-items-center rounded-lg bg-blue-600 text-white"><GraduationCap size={18} /></span>Lolos<span className="text-blue-600">CPNS</span></Link><p className="max-w-2xl text-xs leading-5 text-slate-500">LolosCPNS adalah platform belajar independen dan bukan situs resmi pemerintah, BKN, atau instansi penyelenggara seleksi ASN. Informasi seleksi tetap merujuk pada pengumuman resmi instansi terkait.</p><p className="text-xs text-slate-400">© {new Date().getFullYear()} LolosCPNS</p></div>
+        <div className="container flex flex-col gap-5 py-8 sm:flex-row sm:items-center sm:justify-between"><Link href="/" className="flex items-center gap-2 font-extrabold text-slate-900"><span className="grid h-8 w-8 place-items-center rounded-lg bg-blue-600 text-white"><GraduationCap size={18} /></span>Sukses<span className="text-blue-600">CPNS</span></Link><p className="max-w-2xl text-xs leading-5 text-slate-500">SuksesCPNS adalah platform belajar independen dan bukan situs resmi pemerintah, BKN, atau instansi penyelenggara seleksi ASN. Informasi seleksi tetap merujuk pada pengumuman resmi instansi terkait.</p><p className="text-xs text-slate-400">© {new Date().getFullYear()} SuksesCPNS</p></div>
       </footer>
     </main>
   );
