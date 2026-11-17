@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, BookOpen, BrainCircuit, CheckCircle2, Clock3, GraduationCap, Menu, ShieldCheck, Sparkles, Target, Trophy, Users, Zap } from "lucide-react";
+import { ArrowRight, BookOpen, BrainCircuit, CheckCircle2, Clock3, GraduationCap, ShieldCheck, Sparkles, Target, Trophy, Users, Zap } from "lucide-react";
 
 const programs = [
   { tag: "CPNS", title: "Persiapan CPNS", description: "Latihan SKD dengan materi TWK, TIU, dan TKP yang tersusun rapi.", icon: GraduationCap, tone: "blue", items: ["Materi dan rangkuman", "Latihan per subtes", "Simulasi CAT"] },
