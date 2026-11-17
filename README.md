@@ -43,6 +43,8 @@ npm run dev
 - `/simulasi`: simulasi CAT dengan timer, navigasi soal, penanda ragu, dan pengumpulan otomatis.
 - `/admin` dan `/admin/materi`: pengelolaan bank soal dan materi.
 - `/paket`: paket gratis/premium dan checkout Midtrans.
+- `/peringkat`: leaderboard publik berbasis persetujuan peserta.
+- `/kebijakan-privasi` dan `/syarat-ketentuan`: informasi kebijakan layanan.
 
 ## Konfigurasi pembayaran
 Tambahkan variabel server-only `MIDTRANS_SERVER_KEY`, `MIDTRANS_IS_PRODUCTION` (`false` untuk sandbox, `true` untuk production), serta `SUPABASE_SERVICE_ROLE_KEY`. Variabel publik `NEXT_PUBLIC_SUPABASE_URL` dan `NEXT_PUBLIC_SUPABASE_ANON_KEY` tetap diperlukan. Atur URL notifikasi Midtrans ke `https://suksescpns.vercel.app/api/payment/webhook`. Jangan pernah menaruh service role key atau server key Midtrans pada variabel berawalan `NEXT_PUBLIC_`.
