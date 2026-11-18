@@ -1,10 +1,79 @@
 "use client";
+
 import Link from "next/link";
-import { useState } from "react";
-import { ArrowLeft, Check, Crown, LoaderCircle, Sparkles } from "lucide-react";
-const plans=[{id:"free",name:"Gratis",price:"Rp0",period:"selamanya",features:["Akses materi belajar dasar","Latihan dari soal yang tersedia","Riwayat latihan tersimpan"]},{id:"premium_monthly",name:"Premium Bulanan",price:"Rp49.000",period:"per bulan",features:["Semua fasilitas Gratis","Akses paket latihan premium","Pembahasan dan evaluasi lebih lengkap","Prioritas fitur baru"]},{id:"premium_yearly",name:"Premium Tahunan",price:"Rp399.000",period:"per tahun",features:["Semua fasilitas Premium","Akses selama 12 bulan","Lebih hemat dibanding bulanan","Dukungan pengguna prioritas"]}];
-export default function PaketPage(){
- const [busy,setBusy]=useState("");const [message,setMessage]=useState("");
- async function checkout(id:string){if(id==="free"){window.location.href="/masuk";return;}setBusy(id);setMessage("");try{const response=await fetch("/api/payment",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({packageId:id})});const data=await response.json();if(response.status===401){window.location.href="/masuk?next=%2Fpaket";return;}if(!response.ok)throw new Error(data.error||"Pembayaran belum dapat dimulai.");if(data.redirectUrl)window.location.href=data.redirectUrl;else throw new Error("Tautan pembayaran tidak tersedia.");}catch(e){setMessage(e instanceof Error?e.message:"Terjadi kesalahan.");}finally{setBusy("");}}
- return <main className="min-h-screen bg-slate-50"><header className="border-b bg-white"><div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4"><Link href="/" className="inline-flex items-center gap-2 text-sm font-bold text-slate-600"><ArrowLeft size={17}/> Beranda</Link><span className="font-black">Sukses<span className="text-blue-600">CPNS</span></span></div></header><div className="mx-auto max-w-6xl px-5 py-12"><div className="mx-auto max-w-2xl text-center"><span className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-amber-100 text-amber-700"><Crown/></span><p className="mt-5 text-xs font-extrabold uppercase tracking-widest text-blue-600">Paket belajar</p><h1 className="mt-2 text-3xl font-black text-slate-950 sm:text-4xl">Pilih dukungan belajarmu</h1><p className="mt-3 leading-7 text-slate-600">Mulai secara gratis dan tingkatkan paket saat kamu membutuhkan fasilitas tambahan.</p></div>{message&&<p role="alert" className="mx-auto mt-6 max-w-xl rounded-xl bg-amber-50 p-4 text-sm text-amber-900">{message}</p>}<div className="mt-10 grid gap-5 lg:grid-cols-3">{plans.map((p,i)=><article key={p.id} className={"rounded-3xl border bg-white p-7 "+(i===1?"border-blue-500 shadow-xl shadow-blue-100":"border-slate-200 shadow-sm")}><div className="flex items-center justify-between"><h2 className="text-xl font-black">{p.name}</h2>{i===1&&<span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700">Populer</span>}</div><p className="mt-6 text-3xl font-black text-slate-950">{p.price}</p><p className="mt-1 text-sm text-slate-500">{p.period}</p><ul className="mt-7 space-y-3">{p.features.map(f=><li key={f} className="flex gap-2 text-sm text-slate-600"><Check size={17} className="shrink-0 text-emerald-600"/>{f}</li>)}</ul><button disabled={Boolean(busy)} onClick={()=>void checkout(p.id)} className={"mt-8 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold disabled:opacity-60 "+(i===1?"bg-blue-600 text-white":"bg-slate-100 text-slate-800")}>{busy===p.id&&<LoaderCircle size={16} className="animate-spin"/>}{p.id==="free"?"Mulai gratis":"Bayar "+p.name}</button></article>)}</div><div className="mt-8 rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm leading-6 text-amber-900"><div className="flex gap-2 font-bold"><Sparkles size={17}/> Informasi pembayaran</div>Checkout menggunakan Midtrans Snap. Pembayaran berbayar hanya aktif setelah admin memasang MIDTRANS_SERVER_KEY, NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, dan SUPABASE_SERVICE_ROLE_KEY di Vercel serta mengatur URL notifikasi Midtrans ke /api/payment/webhook.</div></div></main>
+import { ArrowLeft, BookOpen, Check, Smartphone } from "lucide-react";
+
+const features = [
+  "Akses materi belajar reguler CPNS dan PPPK",
+  "Latihan soal TWK, TIU, dan TKP yang tersedia di website",
+  "Simulasi CAT dan riwayat hasil latihan",
+  "Rangkuman materi dan video pembelajaran yang tersedia",
+  "Progres belajar dan profil pengguna",
+];
+
+export default function PaketPage() {
+  return (
+    <main className="min-h-screen bg-slate-50">
+      <header className="border-b bg-white">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
+          <Link href="/" className="inline-flex items-center gap-2 text-sm font-bold text-slate-600">
+            <ArrowLeft size={17} /> Beranda
+          </Link>
+          <span className="font-black">Sukses<span className="text-blue-600">CPNS</span></span>
+        </div>
+      </header>
+
+      <div className="mx-auto max-w-4xl px-5 py-12">
+        <div className="mx-auto max-w-2xl text-center">
+          <span className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-blue-100 text-blue-700">
+            <BookOpen />
+          </span>
+          <p className="mt-5 text-xs font-extrabold uppercase tracking-widest text-blue-600">Paket website</p>
+          <h1 className="mt-2 text-3xl font-black text-slate-950 sm:text-4xl">Paket Reguler</h1>
+          <p className="mt-3 leading-7 text-slate-600">
+            Belajar dan berlatih persiapan CPNS dan PPPK melalui website SuksesCPNS.
+          </p>
+        </div>
+
+        <section className="mx-auto mt-10 max-w-xl rounded-3xl border border-blue-200 bg-white p-7 shadow-sm">
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="text-xl font-black text-slate-950">Reguler</h2>
+            <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">Gratis</span>
+          </div>
+          <p className="mt-5 text-4xl font-black text-slate-950">Rp0</p>
+          <p className="mt-1 text-sm text-slate-500">Untuk semua pengguna website</p>
+
+          <ul className="mt-7 space-y-3">
+            {features.map((feature) => (
+              <li key={feature} className="flex gap-2 text-sm text-slate-600">
+                <Check size={17} className="shrink-0 text-emerald-600" />
+                {feature}
+              </li>
+            ))}
+          </ul>
+
+          <Link
+            href="/masuk"
+            className="mt-8 flex w-full items-center justify-center rounded-xl bg-blue-600 px-4 py-3 text-sm font-bold text-white hover:bg-blue-700"
+          >
+            Mulai belajar gratis
+          </Link>
+        </section>
+
+        <section className="mx-auto mt-6 max-w-xl rounded-2xl border border-slate-200 bg-slate-100 p-5">
+          <div className="flex items-start gap-3">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-slate-700">
+              <Smartphone size={20} />
+            </span>
+            <div>
+              <h2 className="font-bold text-slate-900">Paket Premium tersedia di aplikasi SuksesCPNS</h2>
+              <p className="mt-1 text-sm leading-6 text-slate-600">
+                Website ini hanya menyediakan Paket Reguler. Jika membutuhkan fitur Premium, pengguna dapat menggunakan aplikasi SuksesCPNS.
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  );
 }
