@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { ChangeEvent, FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
 import type { User } from "@supabase/supabase-js";
 import { BookOpen, Download, LogOut, Search, Trash2, Upload, X } from "lucide-react";
@@ -22,8 +22,8 @@ export default function AdminPage() {
   const fileRef=useRef<HTMLInputElement>(null);
 
   useEffect(()=>{ if(!supabase) return; supabase.auth.getUser().then(({data})=>{ const u=data.user; setUser(u); setIsAdmin(u?.app_metadata?.role==="admin"); }); },[supabase]);
-  async function loadQuestions(){ if(!supabase) return; const {data,error}=await supabase.from("questions").select("*").order("created_at",{ascending:false}); if(error){setMessage(error.message);return;} setQuestions((data||[]) as Question[]); }
-  useEffect(()=>{if(isAdmin) void loadQuestions();},[isAdmin]);
+  const loadQuestions=useCallback(async()=>{ if(!supabase) return; const {data,error}=await supabase.from("questions").select("*").order("created_at",{ascending:false}); if(error){setMessage(error.message);return;} setQuestions((data||[]) as Question[]); },[supabase]);
+  useEffect(()=>{if(isAdmin) void loadQuestions();},[isAdmin,loadQuestions]);
   async function login(e:FormEvent){e.preventDefault();if(!supabase)return;setBusy(true);setMessage("");const {data,error}=await supabase.auth.signInWithPassword({email,password});setBusy(false);if(error){setMessage(error.message);return;}setUser(data.user);setIsAdmin(data.user?.app_metadata?.role==="admin");}
   async function logout(){await supabase?.auth.signOut();setUser(null);setIsAdmin(false);setQuestions([]);}
   function edit(q:Question){setEditing(q.id);setForm({...q,options:[...q.options,...Array(Math.max(0,5-q.options.length)).fill("")].slice(0,5)});window.scrollTo({top:0,behavior:"smooth"});}
