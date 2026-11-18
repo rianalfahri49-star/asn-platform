@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import {FormEvent,useEffect,useMemo,useState} from "react";
+import {FormEvent,useCallback,useEffect,useMemo,useState} from "react";
 import {createBrowserClient} from "@supabase/ssr";
 import type {User} from "@supabase/supabase-js";
 import {ArrowLeft,BookOpen,LogOut,Trash2} from "lucide-react";
@@ -9,9 +9,9 @@ const blank={title:"",category:"TWK",summary:"",content:"",is_published:false,is
 export default function AdminMateriPage(){
  const db=useMemo(()=>{const u=process.env.NEXT_PUBLIC_SUPABASE_URL,k=process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;return u&&k?createBrowserClient(u,k):null;},[]);
  const [user,setUser]=useState<User|null>(null);const [admin,setAdmin]=useState(false);const [items,setItems]=useState<Material[]>([]);const [form,setForm]=useState(blank);const [editing,setEditing]=useState<string|null>(null);const [message,setMessage]=useState("");
- async function load(){if(!db)return;const {data,error}=await db.from("learning_materials").select("*").order("created_at",{ascending:false});if(error)setMessage(error.message);else setItems((data||[]) as Material[]);}
+ const load=useCallback(async()=>{if(!db)return;const {data,error}=await db.from("learning_materials").select("*").order("created_at",{ascending:false});if(error)setMessage(error.message);else setItems((data||[]) as Material[]);},[db]);
  useEffect(()=>{if(!db)return;void db.auth.getUser().then(({data})=>{setUser(data.user);setAdmin(data.user?.app_metadata?.role==="admin");});},[db]);
- useEffect(()=>{if(admin)void load();},[admin]);
+ useEffect(()=>{if(admin)void load();},[admin,load]);
  async function login(e:FormEvent){e.preventDefault();if(!db)return;const target=e.currentTarget as HTMLFormElement;const formData=new FormData(target);const {data,error}=await db.auth.signInWithPassword({email:String(formData.get("email")),password:String(formData.get("password"))});if(error)setMessage(error.message);else{setUser(data.user);setAdmin(data.user?.app_metadata?.role==="admin");}}
  async function save(e:FormEvent){e.preventDefault();if(!db)return;const result=editing?await db.from("learning_materials").update(form).eq("id",editing):await db.from("learning_materials").insert(form);if(result.error){setMessage(result.error.message);return;}setMessage("Materi tersimpan.");setForm(blank);setEditing(null);await load();}
  async function remove(id:string){if(!db||!window.confirm("Hapus materi ini?"))return;const {error}=await db.from("learning_materials").delete().eq("id",id);setMessage(error?.message||"Materi dihapus.");await load();}
