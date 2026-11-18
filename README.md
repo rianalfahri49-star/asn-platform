@@ -8,16 +8,20 @@ Platform belajar independen untuk persiapan seleksi CPNS dan PPPK.
 - Next.js App Router + TypeScript
 - Tailwind CSS
 - Supabase PostgreSQL, Row Level Security, dan Auth
-- Midtrans Snap untuk pembayaran premium
 - Vercel untuk deployment
+
+## Model layanan website
+- Website saat ini menyediakan Paket Reguler secara gratis.
+- Materi dan latihan yang ditampilkan di website dibatasi untuk konten Reguler.
+- Paket Premium direncanakan tersedia melalui aplikasi SuksesCPNS; website tidak menyediakan checkout atau pembayaran.
+- Tidak diperlukan konfigurasi Midtrans untuk menjalankan website saat ini.
 
 ## Modul aplikasi
 - Beranda dan navigasi responsif.
-- Bank soal TWK, TIU, TKP dengan CRUD admin, pembahasan, CSV import, dan konten premium.
+- Bank soal TWK, TIU, TKP dengan pengelolaan admin, pembahasan, dan impor CSV.
 - Simulasi CAT dengan timer 110 menit, navigasi soal, penanda ragu, pengumpulan otomatis, dan riwayat hasil.
 - Registrasi, login, pemulihan password, profil, progres, riwayat, dan persetujuan tampil di leaderboard.
 - Materi, rangkuman, video pembelajaran, dan pengelolaan materi oleh admin.
-- Paket Gratis dan Premium, checkout Midtrans, webhook bertanda tangan, aktivasi langganan idempotent, dan akses premium berbasis RLS.
 - SEO metadata, sitemap, robots, security headers, health endpoint, halaman privasi, syarat ketentuan, loading, dan 404.
 
 ## Setup Supabase
@@ -38,11 +42,7 @@ Platform belajar independen untuk persiapan seleksi CPNS dan PPPK.
 5. Buat akun admin melalui Supabase Auth dan tetapkan `app_metadata.role = admin` melalui Supabase Dashboard/Admin API yang aman.
 6. Setelah seluruh konfigurasi tersedia, redeploy aplikasi.
 
-## Setup Midtrans
-- `MIDTRANS_SERVER_KEY` (server-only)
-- `MIDTRANS_IS_PRODUCTION=false` untuk sandbox atau `true` untuk production
-- Atur Payment Notification URL ke `https://suksescpns.vercel.app/api/payment/webhook`.
-- Pastikan service role key dan server key Midtrans tidak pernah diekspos ke browser.
+> Migrasi dan tabel transaksi lama masih dipertahankan untuk kompatibilitas pengembangan lanjutan. Fitur pembayaran tidak ditawarkan pada website saat ini.
 
 ## Routes penting
 - `/` beranda
@@ -50,7 +50,7 @@ Platform belajar independen untuk persiapan seleksi CPNS dan PPPK.
 - `/akun` profil dan progres
 - `/materi`, `/latihan`, `/simulasi` belajar dan ujian
 - `/peringkat` leaderboard opt-in
-- `/paket` paket dan pembayaran
+- `/paket` informasi Paket Reguler gratis
 - `/admin`, `/admin/materi` dashboard pengelola
 - `/api/health` health check
 - `/kebijakan-privasi`, `/syarat-ketentuan` kebijakan layanan
