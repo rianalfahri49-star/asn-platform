@@ -8,9 +8,12 @@ Aplikasi Android native berbasis React Native + Expo, terpisah dari aplikasi web
 - [x] Kerangka UI Android awal
 - [x] Integrasi awal Supabase Auth (masuk, daftar, sesi tersimpan, keluar)
 - [ ] Deep link konfirmasi email dan reset password
-- [x] Ringkasan profil dan label paket Reguler/Premium dari Supabase\n- [ ] Audit akses Premium untuk seluruh konten dan alur pembelian
+- [x] Ringkasan profil dan label paket Reguler/Premium dari Supabase
+- [ ] Audit akses Premium untuk seluruh konten dan alur pembelian
 - [ ] Materi, latihan, simulasi CAT, hasil, dan riwayat
-- [x] Konfigurasi profil build EAS untuk APK internal dan AAB produksi\n- [ ] Hubungkan proyek EAS dan hasilkan APK pertama\n- [ ] Pengujian pada perangkat Android
+- [x] Konfigurasi profil build EAS untuk APK internal dan AAB produksi
+- [ ] Hubungkan proyek EAS dan hasilkan APK pertama
+- [ ] Pengujian pada perangkat Android
 
 ## Menjalankan secara lokal
 
@@ -34,6 +37,10 @@ Untuk build Android lokal, siapkan Android Studio/Android SDK lalu jalankan `npm
 - Website tetap menyediakan Paket Reguler gratis. Premium direncanakan tersedia hanya melalui aplikasi Android.
 - Tidak ada perubahan skema database pada tahap fondasi ini.
 
-Paket pengguna di layar awal dibaca dari tabel `user_subscriptions` dan hanya ditandai Premium jika status aktif serta `ends_at` masih berlaku. Ini hanya ringkasan akun; akses konten tetap harus ditegakkan oleh RLS Supabase.\n\nBelum ada APK yang dibangun atau diuji pada perangkat. Build membutuhkan konfigurasi proyek EAS atau Android SDK lokal.\n\n## Catatan identitas aplikasi
+Paket pengguna di layar awal dibaca dari tabel `user_subscriptions` dan hanya ditandai Premium jika status aktif serta `ends_at` masih berlaku. Ini hanya ringkasan akun; akses konten tetap harus ditegakkan oleh RLS Supabase.
+
+Belum ada APK yang dibangun atau diuji pada perangkat. Build membutuhkan konfigurasi proyek EAS atau Android SDK lokal.
+
+## Catatan identitas aplikasi
 
 Android application ID saat ini adalah nilai awal `com.suksescpns.app`. Konfirmasikan sebelum rilis Play Store karena application ID bersifat identitas permanen aplikasi.
