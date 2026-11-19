@@ -5,7 +5,8 @@ import {StatusBar} from "expo-status-bar";
 import {AuthProvider,useSession} from "../src/providers/AuthProvider";
 function Guard(){
  const {session,loading,configured}=useSession(),segments=useSegments(),router=useRouter();
- const routeSegments=segments as string[];\n const first=routeSegments[0],second=routeSegments[1];
+ const routeSegments=segments as string[];
+ const first=routeSegments[0],second=routeSegments[1];
  useEffect(()=>{
   if(loading)return;
   if(first==="(auth)"&&(second==="reset-password"||second==="confirm-email"))return;
