@@ -146,7 +146,7 @@ export default function App() {
   if (session) {
     return (
       <SafeAreaView style={styles.safe}>
-        <StatusBar style="dark" />
+        <StatusBar barStyle="dark-content" />
         <ScrollView contentContainerStyle={styles.content}>
           <View style={styles.header}>
             <View>
@@ -192,7 +192,7 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <StatusBar style="dark" />
+      <StatusBar barStyle="dark-content" />
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === "ios" ? "padding" : undefined}>
         <ScrollView contentContainerStyle={styles.authContent} keyboardShouldPersistTaps="handled">
           <View style={styles.logoMark}><Text style={styles.logoMarkText}>S</Text></View>
