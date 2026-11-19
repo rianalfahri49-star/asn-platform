@@ -1,0 +1,33 @@
+name: Android app checks
+
+on:
+  pull_request:
+    paths:
+      - "android-app/**"
+      - ".github/workflows/android-app-check.yml"
+  push:
+    branches:
+      - "phase-4/android-expo-app"
+    paths:
+      - "android-app/**"
+      - ".github/workflows/android-app-check.yml"
+
+jobs:
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.13"
+          cache: npm
+          cache-dependency-path: android-app/package-lock.json
+      - name: Install dependencies
+        working-directory: android-app
+        run: npm install --no-audit --no-fund
+      - name: Validate Expo package versions
+        working-directory: android-app
+        run: npx expo install --check
+      - name: TypeScript check
+        working-directory: android-app
+        run: npm run typecheck
