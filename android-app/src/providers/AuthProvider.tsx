@@ -12,7 +12,8 @@ export function AuthProvider({children}:React.PropsWithChildren){
   void supabase.auth.getSession().then(({data,error})=>{if(!alive)return;if(error)console.warn(error.message);setSession(data.session);setLoading(false);});
   const {data:listener}=supabase.auth.onAuthStateChange((_event,next)=>{setSession(next);setLoading(false);});
   const onState=(state:AppStateStatus)=>state==="active"?supabase.auth.startAutoRefresh():supabase.auth.stopAutoRefresh();
-  const sub=AppState.addEventListener("change",onState);\n  if(AppState.currentState==="active")supabase.auth.startAutoRefresh();else supabase.auth.stopAutoRefresh();
+  const sub=AppState.addEventListener("change",onState);
+  if(AppState.currentState==="active")supabase.auth.startAutoRefresh();else supabase.auth.stopAutoRefresh();
   return()=>{alive=false;listener.subscription.unsubscribe();sub.remove();};
  },[]);
  const value=useMemo(()=>({session,loading,configured:isSupabaseConfigured}),[session,loading]);
