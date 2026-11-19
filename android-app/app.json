@@ -15,7 +15,22 @@
       "versionCode": 1,
       "adaptiveIcon": {
         "backgroundColor": "#0B1F3A"
-      }
+      },
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": false,
+          "data": [
+            {
+              "scheme": "suksescpns"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ]
     }
   }
 }
