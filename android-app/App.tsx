@@ -26,6 +26,8 @@ export default function App() {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
+  const [profileName, setProfileName] = useState("");
+  const [planLabel, setPlanLabel] = useState("Reguler");
 
   useEffect(() => {
     if (!isSupabaseConfigured) {
@@ -48,12 +50,35 @@ export default function App() {
 
   useEffect(() => {
     if (!isSupabaseConfigured) return;
+    if (AppState.currentState === "active") supabase.auth.startAutoRefresh();
     const subscription = AppState.addEventListener("change", (state) => {
       if (state === "active") supabase.auth.startAutoRefresh();
       else supabase.auth.stopAutoRefresh();
     });
     return () => subscription.remove();
   }, []);
+
+  useEffect(() => {
+    if (!session) {
+      setProfileName("");
+      setPlanLabel("Reguler");
+      return;
+    }
+    let cancelled = false;
+    async function loadAccountSummary() {
+      const [profileResult, subscriptionResult] = await Promise.all([
+        supabase.from("profiles").select("full_name").eq("id", session!.user.id).maybeSingle(),
+        supabase.from("user_subscriptions").select("package_id,status,ends_at")
+          .eq("user_id", session!.user.id).eq("status", "active")
+          .gt("ends_at", new Date().toISOString()).order("ends_at", { ascending: false }).limit(1).maybeSingle(),
+      ]);
+      if (cancelled) return;
+      setProfileName(profileResult.data?.full_name?.trim() ?? "");
+      setPlanLabel(subscriptionResult.data ? "Premium" : "Reguler");
+    }
+    void loadAccountSummary();
+    return () => { cancelled = true; };
+  }, [session]);
 
   async function handleAuth() {
     setMessage("");
@@ -131,13 +156,13 @@ export default function App() {
             <View style={styles.avatar}><Text style={styles.avatarText}>{(session.user.email ?? "S").slice(0, 1).toUpperCase()}</Text></View>
           </View>
           <View style={styles.hero}>
-            <Text style={styles.heroTitle}>Siap belajar hari ini?</Text>
+            <Text style={styles.heroTitle}>{profileName ? `Halo, ${profileName}!` : "Siap belajar hari ini?"}</Text>
             <Text style={styles.heroText}>Latihan terarah untuk mempersiapkan seleksi CPNS dan PPPK.</Text>
           </View>
           <Text style={styles.sectionTitle}>Akun kamu</Text>
           <View style={styles.panel}>
             <Text style={styles.label}>EMAIL</Text>
-            <Text style={styles.accountEmail}>{session.user.email}</Text>
+            <Text style={styles.accountEmail}>{session.user.email}</Text>\n            <Text style={styles.planPill}>Paket {planLabel}</Text>
             <Text style={styles.mutedSmall}>Akun terhubung ke SuksesCPNS.</Text>
           </View>
           <Text style={styles.sectionTitle}>Menu belajar</Text>
@@ -229,6 +254,7 @@ const styles = StyleSheet.create({
   heroText: { color: "#CBD5E1", fontSize: 13, lineHeight: 20, marginTop: 8 },
   panel: { backgroundColor: "#FFFFFF", borderRadius: 16, borderWidth: 1, borderColor: "#E2E8F0", padding: 17 },
   accountEmail: { color: "#0F172A", fontSize: 15, fontWeight: "700", marginTop: 6 },
+  planPill: { color: "#1D4ED8", backgroundColor: "#EFF6FF", alignSelf: "flex-start", overflow: "hidden", borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6, fontSize: 12, fontWeight: "800", marginTop: 10 },
   menuCard: { backgroundColor: "#FFFFFF", borderRadius: 16, borderWidth: 1, borderColor: "#E2E8F0", padding: 18, marginBottom: 12 },
   menuTitle: { color: "#0F172A", fontSize: 16, fontWeight: "800" },
   menuDescription: { color: "#64748B", fontSize: 13, marginTop: 6, lineHeight: 19 },
