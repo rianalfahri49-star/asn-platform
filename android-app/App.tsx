@@ -7,12 +7,12 @@ import {
   Pressable,
   SafeAreaView,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from "react-native";
-import { StatusBar } from "expo-status-bar";
 import type { Session } from "@supabase/supabase-js";
 import { isSupabaseConfigured, supabase } from "./src/lib/supabase";
 
@@ -110,7 +110,7 @@ export default function App() {
   if (!isSupabaseConfigured) {
     return (
       <SafeAreaView style={styles.center}>
-        <StatusBar style="dark" />
+        <StatusBar barStyle="dark-content" />
         <Text style={styles.brand}>SuksesCPNS</Text>
         <Text style={styles.heading}>Konfigurasi belum lengkap</Text>
         <Text style={styles.body}>Isi EXPO_PUBLIC_SUPABASE_URL dan EXPO_PUBLIC_SUPABASE_ANON_KEY pada file .env lokal sebelum menjalankan aplikasi.</Text>
