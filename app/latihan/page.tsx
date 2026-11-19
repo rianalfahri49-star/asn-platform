@@ -4,27 +4,204 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
 import { ArrowLeft, ArrowRight, CheckCircle2, Clock3, LoaderCircle, RotateCcw } from "lucide-react";
+import { submitExamAction, type RawExamAnswer } from "../simulasi/actions";
 
-type Question={id:string;category:"TWK"|"TIU"|"TKP";topic:string;question:string;options:string[];correct_answer:string;explanation:string};
-const LETTERS=["A","B","C","D","E"];
-function formatTime(seconds:number){return Math.floor(seconds/60).toString().padStart(2,"0")+":"+Math.max(0,seconds%60).toString().padStart(2,"0");}
-export default function LatihanPage(){
-  const supabase=useMemo(()=>{const u=process.env.NEXT_PUBLIC_SUPABASE_URL,k=process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;return u&&k?createBrowserClient(u,k):null;},[]);
-  const [questions,setQuestions]=useState<Question[]>([]); const [answers,setAnswers]=useState<Record<string,string>>({});
-  const [index,setIndex]=useState(0); const [seconds,setSeconds]=useState(0); const [started,setStarted]=useState(false); const [finished,setFinished]=useState(false);
-  const [category,setCategory]=useState("SEMUA"); const [loading,setLoading]=useState(false); const [error,setError]=useState(""); const [saved,setSaved]=useState(false);
-  const load=useCallback(async()=>{if(!supabase){setError("Bank soal belum aktif. Supabase perlu dikonfigurasi oleh admin.");return;}setLoading(true);setError("");let query=supabase.from("questions").select("id,category,topic,question,options,correct_answer,explanation").eq("is_published",true).eq("is_premium",false).limit(50);if(category!=="SEMUA")query=query.eq("category",category);const {data,error}=await query;if(error)setError(error.message);else setQuestions((data||[]) as Question[]);setLoading(false);},[supabase,category]);
-  useEffect(()=>{void load();},[load]);
-  useEffect(()=>{if(!started||finished)return;const timer=window.setInterval(()=>setSeconds(s=>s+1),1000);return()=>window.clearInterval(timer);},[started,finished]);
-  const current=questions[index]; const answered=Object.keys(answers).length;
-  const score=questions.reduce((sum,q)=>sum+(answers[q.id]===q.correct_answer?5:0),0);
-  async function finish(){setFinished(true);setStarted(false);if(!supabase||saved)return;const {data:{user}}=await supabase.auth.getUser();if(!user)return;const {error:saveError}=await supabase.from("exam_attempts").insert({user_id:user.id,title:"Latihan "+(category==="SEMUA"?"SKD":category),category,total_questions:questions.length,correct_answers:questions.filter(q=>answers[q.id]===q.correct_answer).length,score,duration_seconds:seconds,answers});if(saveError)setError("Hasil tampil, tetapi belum tersimpan: "+saveError.message);else setSaved(true);}
-  function restart(){setAnswers({});setIndex(0);setSeconds(0);setStarted(false);setFinished(false);setSaved(false);void load();}
-  if(loading&&!questions.length)return <main className="grid min-h-screen place-items-center"><LoaderCircle className="animate-spin text-blue-600"/></main>;
-  return <main className="min-h-screen bg-slate-50 pb-16"><header className="border-b bg-white"><div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-4"><Link href="/" className="inline-flex items-center gap-2 text-sm font-bold text-slate-600"><ArrowLeft size={17}/> Beranda</Link><span className="font-black text-slate-900">Sukses<span className="text-blue-600">CPNS</span></span><span className="text-xs font-semibold text-slate-400">Mode latihan</span></div></header>
-  <div className="mx-auto max-w-5xl px-5 py-8"><div className="mb-7"><p className="text-xs font-extrabold uppercase tracking-widest text-blue-600">Ruang latihan</p><h1 className="mt-2 text-3xl font-black text-slate-950">Asah kemampuanmu</h1><p className="mt-2 text-slate-600">Pilih subtes dan kerjakan soal dari bank soal yang sudah diterbitkan admin.</p></div>
-  {!started&&!finished&&<section className="rounded-3xl border bg-white p-6 shadow-sm"><h2 className="text-lg font-extrabold">Atur sesi latihan</h2><div className="mt-4 flex flex-wrap gap-2">{["SEMUA","TWK","TIU","TKP"].map(c=><button key={c} onClick={()=>{setCategory(c);setAnswers({});setIndex(0);}} className={"rounded-full px-4 py-2 text-sm font-bold "+(category===c?"bg-blue-600 text-white":"bg-slate-100 text-slate-600")}>{c==="SEMUA"?"Semua subtes":c}</button>)}</div><div className="mt-5 rounded-2xl bg-blue-50 p-4 text-sm text-blue-900">{questions.length?questions.length+" soal tersedia untuk sesi ini.": "Belum ada soal terbit pada kategori ini."} <span className="block mt-1 text-blue-700">Skor latihan sederhana: 5 poin untuk jawaban benar. Ini bukan perhitungan resmi nilai SKD.</span></div>{error&&<p className="mt-4 text-sm text-red-600">{error}</p>}<button disabled={!questions.length} onClick={()=>setStarted(true)} className="mt-5 rounded-xl bg-blue-600 px-5 py-3 font-bold text-white disabled:cursor-not-allowed disabled:opacity-40">Mulai latihan</button></section>}
-  {started&&current&&<><div className="mb-4 grid gap-3 sm:grid-cols-3"><div className="rounded-2xl border bg-white p-4"><p className="text-xs text-slate-500">Progres</p><p className="mt-1 text-xl font-black">{index+1} / {questions.length}</p></div><div className="rounded-2xl border bg-white p-4"><p className="text-xs text-slate-500">Terjawab</p><p className="mt-1 text-xl font-black">{answered} soal</p></div><div className="rounded-2xl border bg-white p-4"><p className="flex items-center gap-2 text-xs text-slate-500"><Clock3 size={14}/> Waktu berjalan</p><p className="mt-1 text-xl font-black tabular-nums">{formatTime(seconds)}</p></div></div><section className="rounded-3xl border bg-white p-6 sm:p-8"><div className="flex items-center justify-between"><span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700">{current.category} · {current.topic}</span><span className="text-xs text-slate-400">Soal {index+1}</span></div><h2 className="mt-6 text-lg font-bold leading-8 text-slate-900">{current.question}</h2><div className="mt-6 space-y-3">{current.options.map((option,i)=>{const letter=LETTERS[i];return <button key={letter} onClick={()=>setAnswers(a=>({...a,[current.id]:letter}))} className={"flex w-full items-start gap-3 rounded-2xl border p-4 text-left transition "+(answers[current.id]===letter?"border-blue-500 bg-blue-50":"border-slate-200 hover:border-blue-200 hover:bg-slate-50")}><span className={"grid h-8 w-8 shrink-0 place-items-center rounded-full text-sm font-black "+(answers[current.id]===letter?"bg-blue-600 text-white":"bg-slate-100 text-slate-600")}>{letter}</span><span className="pt-1 text-sm leading-6 text-slate-700">{option}</span></button>;})}</div><div className="mt-8 flex flex-wrap items-center justify-between gap-3"><button disabled={index===0} onClick={()=>setIndex(i=>i-1)} className="rounded-xl border px-4 py-3 text-sm font-bold text-slate-600 disabled:opacity-30">Sebelumnya</button><div className="flex gap-2"><button onClick={()=>setIndex(i=>Math.min(questions.length-1,i+1))} disabled={index===questions.length-1} className="inline-flex items-center gap-2 rounded-xl bg-blue-50 px-4 py-3 text-sm font-bold text-blue-700 disabled:opacity-40">Berikutnya <ArrowRight size={16}/></button><button onClick={()=>void finish()} className="rounded-xl bg-emerald-600 px-4 py-3 text-sm font-bold text-white">Selesaikan</button></div></div></section><div className="mt-4 flex flex-wrap gap-2">{questions.map((q,i)=><button key={q.id} onClick={()=>setIndex(i)} aria-label={"Ke soal "+(i+1)} className={"h-9 w-9 rounded-lg text-xs font-bold "+(index===i?"bg-blue-600 text-white":answers[q.id]?"bg-emerald-100 text-emerald-800":"bg-white text-slate-500 border")}>{i+1}</button>)}</div></>}
-  {finished&&<section className="rounded-3xl border bg-white p-7 text-center shadow-sm"><span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-emerald-50 text-emerald-600"><CheckCircle2 size={28}/></span><h2 className="mt-4 text-2xl font-black">Latihan selesai!</h2><p className="mt-2 text-slate-500">Hasil sesi latihanmu</p><div className="mx-auto mt-6 grid max-w-lg grid-cols-2 gap-3"><div className="rounded-2xl bg-blue-50 p-5"><p className="text-sm text-blue-700">Skor latihan</p><p className="mt-1 text-3xl font-black text-blue-900">{score}</p></div><div className="rounded-2xl bg-emerald-50 p-5"><p className="text-sm text-emerald-700">Jawaban benar</p><p className="mt-1 text-3xl font-black text-emerald-900">{questions.filter(q=>answers[q.id]===q.correct_answer).length}/{questions.length}</p></div></div><p className="mt-4 text-sm text-slate-500">Waktu: {formatTime(seconds)} · {answered} soal dijawab</p>{saved&&<p className="mt-3 text-sm font-semibold text-emerald-700">Hasil tersimpan di akunmu.</p>}{error&&<p className="mt-3 text-sm text-amber-700">{error}</p>}<div className="mt-6 flex flex-wrap justify-center gap-3"><button onClick={restart} className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 font-bold text-white"><RotateCcw size={16}/> Latihan lagi</button><Link href="/akun" className="rounded-xl border px-5 py-3 font-bold text-slate-700">Lihat progres</Link></div><div className="mt-8 space-y-3 text-left">{questions.map((q,i)=><article key={q.id} className="rounded-2xl border p-4"><p className="text-xs font-bold text-slate-500">{q.category} · Soal {i+1}</p><p className="mt-2 font-semibold text-slate-800">{q.question}</p><p className="mt-2 text-sm">Jawabanmu: <b>{answers[q.id]||"Belum dijawab"}</b> · Kunci: <b>{q.correct_answer}</b></p>{q.explanation&&<p className="mt-2 text-sm leading-6 text-slate-600">{q.explanation}</p>}</article>)}</div></section>}
-  </div></main>;
+type Question = { id: string; category: "TWK" | "TIU" | "TKP"; topic: string; question: string; options: string[] };
+type Result = { attempt_id: string; total_questions: number; correct_answers: number; score: number };
+const LETTERS = ["A", "B", "C", "D", "E"];
+
+function formatTime(seconds: number) {
+  return Math.floor(seconds / 60).toString().padStart(2, "0") + ":" +
+    Math.max(0, seconds % 60).toString().padStart(2, "0");
+}
+
+export default function LatihanPage() {
+  const supabase = useMemo(() => {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    return url && key ? createBrowserClient(url, key) : null;
+  }, []);
+
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [index, setIndex] = useState(0);
+  const [seconds, setSeconds] = useState(0);
+  const [started, setStarted] = useState(false);
+  const [finished, setFinished] = useState(false);
+  const [category, setCategory] = useState("SEMUA");
+  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [result, setResult] = useState<Result | null>(null);
+
+  const load = useCallback(async () => {
+    if (!supabase) {
+      setError("Bank soal belum aktif. Supabase perlu dikonfigurasi oleh admin.");
+      return;
+    }
+    setLoading(true);
+    setError("");
+    let query = supabase
+      .from("questions")
+      .select("id,category,topic,question,options")
+      .eq("is_published", true)
+      .eq("is_premium", false)
+      .limit(50);
+    if (category !== "SEMUA") query = query.eq("category", category);
+    const { data, error: loadError } = await query;
+    if (loadError) setError(loadError.message);
+    else setQuestions((data || []) as Question[]);
+    setLoading(false);
+  }, [supabase, category]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  useEffect(() => {
+    if (!started || finished) return;
+    const timer = window.setInterval(() => setSeconds((value) => value + 1), 1000);
+    return () => window.clearInterval(timer);
+  }, [started, finished]);
+
+  const current = questions[index];
+  const answered = Object.keys(answers).length;
+
+  async function finish() {
+    if (submitting || finished || !questions.length) return;
+    setSubmitting(true);
+    setError("");
+    const rawAnswers: RawExamAnswer[] = questions.map((item) => ({
+      question_id: item.id,
+      answer: answers[item.id] ?? null,
+      is_marked: false,
+    }));
+    const title = "Latihan " + (category === "SEMUA" ? "SKD" : category);
+    const response = await submitExamAction(rawAnswers, seconds, title, category === "SEMUA" ? "SKD" : category);
+    if (!response.success) {
+      setError(response.error);
+      setSubmitting(false);
+      return;
+    }
+    setResult(response.result);
+    setFinished(true);
+    setStarted(false);
+    setSubmitting(false);
+  }
+
+  function restart() {
+    setAnswers({});
+    setIndex(0);
+    setSeconds(0);
+    setStarted(false);
+    setFinished(false);
+    setSubmitting(false);
+    setError("");
+    setResult(null);
+    void load();
+  }
+
+  if (loading && !questions.length) {
+    return <main className="grid min-h-screen place-items-center"><LoaderCircle className="animate-spin text-blue-600" /></main>;
+  }
+
+  return (
+    <main className="min-h-screen bg-slate-50 pb-16">
+      <header className="border-b bg-white">
+        <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-4">
+          <Link href="/" className="inline-flex items-center gap-2 text-sm font-bold text-slate-600"><ArrowLeft size={17} /> Beranda</Link>
+          <span className="font-black text-slate-900">Sukses<span className="text-blue-600">CPNS</span></span>
+          <span className="text-xs font-semibold text-slate-400">Mode latihan</span>
+        </div>
+      </header>
+
+      <div className="mx-auto max-w-5xl px-5 py-8">
+        <div className="mb-7">
+          <p className="text-xs font-extrabold uppercase tracking-widest text-blue-600">Ruang latihan</p>
+          <h1 className="mt-2 text-3xl font-black text-slate-950">Asah kemampuanmu</h1>
+          <p className="mt-2 text-slate-600">Pilih subtes dan kerjakan soal dari bank soal yang sudah diterbitkan admin.</p>
+        </div>
+
+        {!started && !finished && (
+          <section className="rounded-3xl border bg-white p-6 shadow-sm">
+            <h2 className="text-lg font-extrabold">Atur sesi latihan</h2>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {["SEMUA", "TWK", "TIU", "TKP"].map((value) => (
+                <button key={value} onClick={() => { setCategory(value); setAnswers({}); setIndex(0); }} className={"rounded-full px-4 py-2 text-sm font-bold " + (category === value ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600")}>
+                  {value === "SEMUA" ? "Semua subtes" : value}
+                </button>
+              ))}
+            </div>
+            <div className="mt-5 rounded-2xl bg-blue-50 p-4 text-sm text-blue-900">
+              {questions.length ? questions.length + " soal tersedia untuk sesi ini." : "Belum ada soal terbit pada kategori ini."}
+              <span className="mt-1 block text-blue-700">Skor dihitung di server berdasarkan kunci jawaban database. Aturan bobot TKP resmi belum tersedia pada struktur data saat ini.</span>
+            </div>
+            {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
+            <button disabled={!questions.length || loading} onClick={() => setStarted(true)} className="mt-5 rounded-xl bg-blue-600 px-5 py-3 font-bold text-white disabled:cursor-not-allowed disabled:opacity-40">
+              Mulai latihan
+            </button>
+          </section>
+        )}
+
+        {started && current && (
+          <>
+            <div className="mb-4 grid gap-3 sm:grid-cols-3">
+              <div className="rounded-2xl border bg-white p-4"><p className="text-xs text-slate-500">Progres</p><p className="mt-1 text-xl font-black">{index + 1} / {questions.length}</p></div>
+              <div className="rounded-2xl border bg-white p-4"><p className="text-xs text-slate-500">Terjawab</p><p className="mt-1 text-xl font-black">{answered} soal</p></div>
+              <div className="rounded-2xl border bg-white p-4"><p className="flex items-center gap-2 text-xs text-slate-500"><Clock3 size={14} /> Waktu berjalan</p><p className="mt-1 text-xl font-black tabular-nums">{formatTime(seconds)}</p></div>
+            </div>
+            <section className="rounded-3xl border bg-white p-6 sm:p-8">
+              <div className="flex items-center justify-between">
+                <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700">{current.category} · {current.topic}</span>
+                <span className="text-xs text-slate-400">Soal {index + 1}</span>
+              </div>
+              <h2 className="mt-6 text-lg font-bold leading-8 text-slate-900">{current.question}</h2>
+              <div className="mt-6 space-y-3">
+                {current.options.map((option, optionIndex) => {
+                  const letter = LETTERS[optionIndex];
+                  return (
+                    <button key={letter} onClick={() => setAnswers((items) => ({ ...items, [current.id]: letter }))} className={"flex w-full items-start gap-3 rounded-2xl border p-4 text-left transition " + (answers[current.id] === letter ? "border-blue-500 bg-blue-50" : "border-slate-200 hover:border-blue-200 hover:bg-slate-50")}>
+                      <span className={"grid h-8 w-8 shrink-0 place-items-center rounded-full text-sm font-black " + (answers[current.id] === letter ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600")}>{letter}</span>
+                      <span className="pt-1 text-sm leading-6 text-slate-700">{option}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="mt-8 flex flex-wrap items-center justify-between gap-3">
+                <button disabled={index === 0} onClick={() => setIndex((value) => value - 1)} className="rounded-xl border px-4 py-3 text-sm font-bold text-slate-600 disabled:opacity-30">Sebelumnya</button>
+                <div className="flex gap-2">
+                  <button onClick={() => setIndex((value) => Math.min(questions.length - 1, value + 1))} disabled={index === questions.length - 1} className="inline-flex items-center gap-2 rounded-xl bg-blue-50 px-4 py-3 text-sm font-bold text-blue-700 disabled:opacity-40">Berikutnya <ArrowRight size={16} /></button>
+                  <button onClick={() => void finish()} disabled={submitting} className="rounded-xl bg-emerald-600 px-4 py-3 text-sm font-bold text-white disabled:opacity-50">{submitting ? "Mengirim..." : "Selesaikan"}</button>
+                </div>
+              </div>
+              {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
+            </section>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {questions.map((item, questionIndex) => (
+                <button key={item.id} onClick={() => setIndex(questionIndex)} aria-label={"Ke soal " + (questionIndex + 1)} className={"h-9 w-9 rounded-lg text-xs font-bold " + (index === questionIndex ? "bg-blue-600 text-white" : answers[item.id] ? "bg-blue-100 text-blue-800" : "border bg-white text-slate-500")}>{questionIndex + 1}</button>
+              ))}
+            </div>
+          </>
+        )}
+
+        {finished && result && (
+          <section className="rounded-3xl border bg-white p-7 text-center shadow-sm">
+            <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-emerald-50 text-emerald-600"><CheckCircle2 size={28} /></span>
+            <h2 className="mt-4 text-2xl font-black">Latihan selesai!</h2>
+            <p className="mt-2 text-slate-500">Hasil sesi latihanmu dihitung oleh server</p>
+            <div className="mx-auto mt-6 grid max-w-lg grid-cols-2 gap-3">
+              <div className="rounded-2xl bg-blue-50 p-5"><p className="text-sm text-blue-700">Skor latihan</p><p className="mt-1 text-3xl font-black text-blue-900">{result.score}</p></div>
+              <div className="rounded-2xl bg-emerald-50 p-5"><p className="text-sm text-emerald-700">Jawaban benar</p><p className="mt-1 text-3xl font-black text-emerald-900">{result.correct_answers}/{result.total_questions}</p></div>
+            </div>
+            <p className="mt-4 text-sm text-slate-500">Waktu: {formatTime(seconds)} · {answered} soal dijawab</p>
+            <p className="mt-3 text-sm font-semibold text-emerald-700">Hasil tersimpan di akunmu.</p>
+            <div className="mt-6 flex flex-wrap justify-center gap-3">
+              <button onClick={restart} className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 font-bold text-white"><RotateCcw size={16} /> Latihan lagi</button>
+              <Link href="/akun" className="rounded-xl border px-5 py-3 font-bold text-slate-700">Lihat progres</Link>
+            </div>
+          </section>
+        )}
+      </div>
+    </main>
+  );
 }
