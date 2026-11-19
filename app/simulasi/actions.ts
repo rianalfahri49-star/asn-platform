@@ -15,7 +15,9 @@ export type ExamSubmissionResult =
 
 export async function submitExamAction(
   answers: RawExamAnswer[],
-  durationSeconds: number
+  durationSeconds: number,
+  title = "Simulasi CAT SKD",
+  category = "SKD"
 ): Promise<ExamSubmissionResult> {
   try {
     if (!Array.isArray(answers) || answers.length < 1 || answers.length > 110) {
@@ -33,7 +35,7 @@ export async function submitExamAction(
       return { success: false, error: "Format jawaban tidak valid." };
     }
 
-    const duration = Number.isInteger(durationSeconds)
+    if (typeof title !== "string" || !title.trim() || title.length > 120 || !["SKD", "TWK", "TIU", "TKP"].includes(category)) {\n      return { success: false, error: "Informasi sesi ujian tidak valid." };\n    }\n\n    const duration = Number.isInteger(durationSeconds)
       ? Math.min(6600, Math.max(0, durationSeconds))
       : null;
     if (duration === null) {
