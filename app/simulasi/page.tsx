@@ -1,23 +1,328 @@
 "use client";
+
 import Link from "next/link";
-import { useCallback,useEffect,useMemo,useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
-import { ArrowLeft,CheckCircle2,Clock3,Flag,LoaderCircle,RotateCcw } from "lucide-react";
-type Q={id:string;category:"TWK"|"TIU"|"TKP";topic:string;question:string;options:string[];correct_answer:string;explanation:string};
-const letters=["A","B","C","D","E"];const LIMIT=110*60;
-function clock(s:number){return Math.floor(s/60).toString().padStart(2,"0")+":"+Math.max(0,s%60).toString().padStart(2,"0");}
-export default function SimulasiPage(){
- const db=useMemo(()=>{const u=process.env.NEXT_PUBLIC_SUPABASE_URL,k=process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;return u&&k?createBrowserClient(u,k):null;},[]);
- const [questions,setQuestions]=useState<Q[]>([]);const [answers,setAnswers]=useState<Record<string,string>>({});const [marked,setMarked]=useState<string[]>([]);const [idx,setIdx]=useState(0);const [remaining,setRemaining]=useState(LIMIT);const [started,setStarted]=useState(false);const [done,setDone]=useState(false);const [loading,setLoading]=useState(false);const [error,setError]=useState("");const [saved,setSaved]=useState(false);
- const load=useCallback(async()=>{if(!db){setError("Simulasi memerlukan koneksi Supabase. Silakan hubungi admin.");return;}setLoading(true);const {data,error}=await db.from("questions").select("id,category,topic,question,options,correct_answer,explanation").eq("is_published",true).eq("is_premium",false).limit(110);if(error)setError(error.message);else setQuestions((data||[]) as Q[]);setLoading(false);},[db]);
- useEffect(()=>{void load();},[load]);
- const finish=useCallback(async()=>{setDone(true);setStarted(false);if(!db||saved)return;const {data:{user}}=await db.auth.getUser();if(!user)return;const correct=questions.filter(q=>answers[q.id]===q.correct_answer).length;const score=correct*5;const {error}=await db.from("exam_attempts").insert({user_id:user.id,title:"Simulasi CAT SKD",category:"SKD",total_questions:questions.length,correct_answers:correct,score,duration_seconds:LIMIT-remaining,answers});if(error)setError("Hasil tampil tetapi gagal disimpan: "+error.message);else setSaved(true);},[db,saved,questions,answers,remaining]);
- useEffect(()=>{if(!started||done)return;const t=window.setInterval(()=>setRemaining(s=>{if(s<=1){window.clearInterval(t);void finish();return 0;}return s-1;}),1000);return()=>window.clearInterval(t);},[started,done,finish]);
- const q=questions[idx];const correct=questions.filter(x=>answers[x.id]===x.correct_answer).length;
- function reset(){setAnswers({});setMarked([]);setIdx(0);setRemaining(LIMIT);setStarted(false);setDone(false);setSaved(false);void load();}
- return <main className="min-h-screen bg-slate-50"><header className="border-b bg-white"><div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4"><Link href="/" className="inline-flex items-center gap-2 text-sm font-bold text-slate-600"><ArrowLeft size={17}/> Beranda</Link><b>Sukses<span className="text-blue-600">CPNS</span></b><span className="text-xs font-bold text-slate-400">Simulasi CAT</span></div></header><div className="mx-auto max-w-6xl px-5 py-8"><p className="text-xs font-extrabold uppercase tracking-widest text-blue-600">Ujian berbatas waktu</p><h1 className="mt-2 text-3xl font-black">Simulasi CAT SKD</h1><p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">Simulasi menggunakan soal yang diterbitkan admin. Durasi maksimal 110 menit; sesi akan dikumpulkan otomatis saat waktu habis.</p>
- {!started&&!done&&<section className="mt-7 rounded-3xl border bg-white p-7"><h2 className="text-xl font-black">Persiapan ujian</h2><div className="mt-5 grid gap-3 sm:grid-cols-3"><div className="rounded-2xl bg-blue-50 p-4"><p className="text-xs text-blue-700">Durasi</p><p className="mt-1 text-2xl font-black text-blue-950">110 menit</p></div><div className="rounded-2xl bg-blue-50 p-4"><p className="text-xs text-blue-700">Soal tersedia</p><p className="mt-1 text-2xl font-black text-blue-950">{questions.length}</p></div><div className="rounded-2xl bg-blue-50 p-4"><p className="text-xs text-blue-700">Subtes</p><p className="mt-1 text-2xl font-black text-blue-950">TWK · TIU · TKP</p></div></div><p className="mt-5 text-sm text-slate-500">Catatan: bank soal yang tersedia menjadi jumlah soal sesi ini. Skor yang ditampilkan merupakan skor latihan internal, bukan hasil resmi atau passing grade seleksi ASN.</p>{error&&<p className="mt-4 text-sm text-red-600">{error}</p>}<button disabled={!questions.length||loading} onClick={()=>setStarted(true)} className="mt-6 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 font-bold text-white disabled:opacity-40">{loading&&<LoaderCircle className="animate-spin" size={17}/>}Mulai simulasi</button></section>}
- {started&&q&&<div className="mt-6 grid gap-5 lg:grid-cols-[1fr_280px]"><section className="rounded-3xl border bg-white p-6 sm:p-8"><div className="flex flex-wrap items-center justify-between gap-3"><span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700">{q.category} · {q.topic}</span><span className="inline-flex items-center gap-2 rounded-xl bg-amber-50 px-3 py-2 font-mono font-black text-amber-800"><Clock3 size={16}/>{clock(remaining)}</span></div><div className="mt-6 flex items-center justify-between"><span className="text-sm font-bold text-slate-500">Soal {idx+1} dari {questions.length}</span><button onClick={()=>setMarked(m=>m.includes(q.id)?m.filter(x=>x!==q.id):[...m,q.id])} className={"inline-flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-bold "+(marked.includes(q.id)?"bg-amber-100 text-amber-800":"bg-slate-100 text-slate-600")}><Flag size={14}/>{marked.includes(q.id)?"Ditandai":"Tandai ragu-ragu"}</button></div><div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-blue-600" style={{width:((idx+1)/questions.length*100)+"%"}}/></div><h2 className="mt-7 text-lg font-bold leading-8 text-slate-900">{q.question}</h2><div className="mt-6 space-y-3">{q.options.map((option,i)=><button key={i} onClick={()=>setAnswers(a=>({...a,[q.id]:letters[i]}))} className={"flex w-full items-start gap-3 rounded-2xl border p-4 text-left "+(answers[q.id]===letters[i]?"border-blue-500 bg-blue-50":"border-slate-200 hover:bg-slate-50")}><span className="font-black">{letters[i]}.</span><span className="text-sm leading-6 text-slate-700">{option}</span></button>)}</div><div className="mt-8 flex flex-wrap justify-between gap-3"><button disabled={idx===0} onClick={()=>setIdx(i=>i-1)} className="rounded-xl border px-4 py-3 text-sm font-bold disabled:opacity-30">Sebelumnya</button><button onClick={()=>setIdx(i=>Math.min(questions.length-1,i+1))} disabled={idx===questions.length-1} className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white disabled:opacity-30">Soal berikutnya</button></div></section><aside className="h-fit rounded-3xl border bg-white p-5"><h3 className="font-black">Navigasi soal</h3><p className="mt-1 text-xs text-slate-500">{Object.keys(answers).length} dijawab · {marked.length} ditandai</p><div className="mt-4 grid grid-cols-5 gap-2">{questions.map((item,i)=><button key={item.id} onClick={()=>setIdx(i)} className={"relative h-10 rounded-lg text-xs font-bold "+(idx===i?"bg-blue-600 text-white":answers[item.id]?"bg-emerald-100 text-emerald-800":"bg-slate-100 text-slate-600")}>{i+1}{marked.includes(item.id)&&<span className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full bg-amber-500"/>}</button>)}</div><button onClick={()=>void finish()} className="mt-6 w-full rounded-xl bg-emerald-600 px-4 py-3 text-sm font-bold text-white">Kumpulkan ujian</button></aside></div>}
- {done&&<section className="mt-7 rounded-3xl border bg-white p-8 text-center"><CheckCircle2 className="mx-auto text-emerald-600" size={42}/><h2 className="mt-4 text-2xl font-black">Simulasi selesai</h2><div className="mx-auto mt-6 grid max-w-lg grid-cols-2 gap-3"><div className="rounded-2xl bg-blue-50 p-5"><p className="text-sm text-blue-700">Skor latihan</p><p className="mt-1 text-3xl font-black">{correct*5}</p></div><div className="rounded-2xl bg-emerald-50 p-5"><p className="text-sm text-emerald-700">Jawaban benar</p><p className="mt-1 text-3xl font-black">{correct}/{questions.length}</p></div></div><p className="mt-4 text-sm text-slate-500">Waktu digunakan {clock(LIMIT-remaining)}. Skor ini bukan nilai resmi SKD.</p>{saved&&<p className="mt-3 text-sm font-bold text-emerald-700">Hasil tersimpan di riwayat akun.</p>}{error&&<p className="mt-3 text-sm text-amber-700">{error}</p>}<button onClick={reset} className="mt-6 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 font-bold text-white"><RotateCcw size={16}/> Ulangi simulasi</button></section>}
- </div></main>;
+import { ArrowLeft, CheckCircle2, Clock3, Flag, LoaderCircle, RotateCcw } from "lucide-react";
+import { submitExamAction, type RawExamAnswer } from "./actions";
+
+type Question = {
+  id: string;
+  category: "TWK" | "TIU" | "TKP";
+  topic: string;
+  question: string;
+  options: string[];
+};
+type Result = {
+  attempt_id: string;
+  total_questions: number;
+  correct_answers: number;
+  score: number;
+};
+
+const LETTERS = ["A", "B", "C", "D", "E"];
+const LIMIT = 110 * 60;
+
+function clock(seconds: number) {
+  return Math.floor(seconds / 60).toString().padStart(2, "0") + ":" +
+    Math.max(0, seconds % 60).toString().padStart(2, "0");
+}
+
+export default function SimulasiPage() {
+  const db = useMemo(() => {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    return url && key ? createBrowserClient(url, key) : null;
+  }, []);
+
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [marked, setMarked] = useState<string[]>([]);
+  const [idx, setIdx] = useState(0);
+  const [remaining, setRemaining] = useState(LIMIT);
+  const [started, setStarted] = useState(false);
+  const [done, setDone] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [error, setError] = useState("");
+  const [result, setResult] = useState<Result | null>(null);
+
+  const load = useCallback(async () => {
+    if (!db) {
+      setError("Simulasi memerlukan koneksi Supabase. Silakan hubungi admin.");
+      return;
+    }
+    setLoading(true);
+    setError("");
+    const { data, error: loadError } = await db
+      .from("questions")
+      .select("id,category,topic,question,options")
+      .eq("is_published", true)
+      .eq("is_premium", false)
+      .limit(110);
+    if (loadError) setError(loadError.message);
+    else setQuestions((data || []) as Question[]);
+    setLoading(false);
+  }, [db]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  const answeredCount = questions.filter((item) => Boolean(answers[item.id])).length;
+  const markedCount = marked.length;
+  const unansweredCount = Math.max(0, questions.length - answeredCount);
+  const current = questions[idx];
+
+  const finish = useCallback(async () => {
+    if (submitting || done || !questions.length) return;
+    setSubmitting(true);
+    setError("");
+
+    const rawAnswers: RawExamAnswer[] = questions.map((item) => ({
+      question_id: item.id,
+      answer: answers[item.id] ?? null,
+      is_marked: marked.includes(item.id),
+    }));
+
+    const response = await submitExamAction(rawAnswers, LIMIT - remaining);
+    if (!response.success) {
+      setError(response.error);
+      setSubmitting(false);
+      return;
+    }
+
+    setResult(response.result);
+    setDone(true);
+    setStarted(false);
+    setShowConfirmModal(false);
+    setSubmitting(false);
+  }, [answers, done, marked, questions, remaining, submitting]);
+
+  useEffect(() => {
+    if (!started || done || submitting) return;
+    if (remaining <= 0) {
+      void finish();
+      return;
+    }
+    const timer = window.setTimeout(() => setRemaining((value) => value - 1), 1000);
+    return () => window.clearTimeout(timer);
+  }, [started, done, submitting, remaining, finish]);
+
+  function reset() {
+    setAnswers({});
+    setMarked([]);
+    setIdx(0);
+    setRemaining(LIMIT);
+    setStarted(false);
+    setDone(false);
+    setSubmitting(false);
+    setShowConfirmModal(false);
+    setError("");
+    setResult(null);
+    void load();
+  }
+
+  return (
+    <main className="min-h-screen bg-slate-50">
+      <header className="border-b bg-white">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
+          <Link href="/" className="inline-flex items-center gap-2 text-sm font-bold text-slate-600">
+            <ArrowLeft size={17} /> Beranda
+          </Link>
+          <b>Sukses<span className="text-blue-600">CPNS</span></b>
+          <span className="text-xs font-bold text-slate-400">Simulasi CAT</span>
+        </div>
+      </header>
+
+      <div className="mx-auto max-w-6xl px-5 py-8">
+        <p className="text-xs font-extrabold uppercase tracking-widest text-blue-600">Ujian berbatas waktu</p>
+        <h1 className="mt-2 text-3xl font-black">Simulasi CAT SKD</h1>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+          Simulasi menggunakan soal yang diterbitkan admin. Durasi maksimal 110 menit; sesi akan dikumpulkan otomatis saat waktu habis.
+        </p>
+
+        {!started && !done && (
+          <section className="mt-7 rounded-3xl border bg-white p-7">
+            <h2 className="text-xl font-black">Persiapan ujian</h2>
+            <div className="mt-5 grid gap-3 sm:grid-cols-3">
+              <div className="rounded-2xl bg-blue-50 p-4">
+                <p className="text-xs text-blue-700">Durasi</p>
+                <p className="mt-1 text-2xl font-black text-blue-950">110 menit</p>
+              </div>
+              <div className="rounded-2xl bg-blue-50 p-4">
+                <p className="text-xs text-blue-700">Soal tersedia</p>
+                <p className="mt-1 text-2xl font-black text-blue-950">{questions.length}</p>
+              </div>
+              <div className="rounded-2xl bg-blue-50 p-4">
+                <p className="text-xs text-blue-700">Subtes</p>
+                <p className="mt-1 text-2xl font-black text-blue-950">TWK · TIU · TKP</p>
+              </div>
+            </div>
+            <p className="mt-5 text-sm text-slate-500">
+              Catatan: bank soal yang tersedia menjadi jumlah soal sesi ini. Skor dihitung server berdasarkan kunci jawaban database, bukan nilai yang dikirim browser. Aturan bobot TKP resmi belum tersedia pada struktur data saat ini.
+            </p>
+            {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
+            <button
+              disabled={!questions.length || loading}
+              onClick={() => setStarted(true)}
+              className="mt-6 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 font-bold text-white disabled:opacity-40"
+            >
+              {loading && <LoaderCircle className="animate-spin" size={17} />}
+              Mulai simulasi
+            </button>
+          </section>
+        )}
+
+        {started && current && (
+          <div className="mt-6 grid gap-5 lg:grid-cols-[1fr_280px]">
+            <section className="rounded-3xl border bg-white p-6 sm:p-8">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700">
+                  {current.category} · {current.topic}
+                </span>
+                <span className="inline-flex items-center gap-2 rounded-xl bg-amber-50 px-3 py-2 font-mono font-black text-amber-800">
+                  <Clock3 size={16} />{clock(remaining)}
+                </span>
+              </div>
+
+              <div className="mt-6 flex items-center justify-between">
+                <span className="text-sm font-bold text-slate-500">Soal {idx + 1} dari {questions.length}</span>
+                <button
+                  onClick={() => setMarked((items) => items.includes(current.id) ? items.filter((id) => id !== current.id) : [...items, current.id])}
+                  className={"inline-flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-bold " + (marked.includes(current.id) ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600")}
+                >
+                  <Flag size={14} />{marked.includes(current.id) ? "Hapus tanda ragu" : "Tandai ragu-ragu"}
+                </button>
+              </div>
+
+              <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100">
+                <div className="h-full rounded-full bg-blue-600" style={{ width: ((idx + 1) / questions.length * 100) + "%" }} />
+              </div>
+
+              <h2 className="mt-7 text-lg font-bold leading-8 text-slate-900">{current.question}</h2>
+              <div className="mt-6 space-y-3">
+                {current.options.map((option, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setAnswers((items) => ({ ...items, [current.id]: LETTERS[index] }))}
+                    className={"flex w-full items-start gap-3 rounded-2xl border p-4 text-left " + (answers[current.id] === LETTERS[index] ? "border-blue-500 bg-blue-50" : "border-slate-200 hover:bg-slate-50")}
+                  >
+                    <span className="font-black">{LETTERS[index]}.</span>
+                    <span className="text-sm leading-6 text-slate-700">{option}</span>
+                  </button>
+                ))}
+              </div>
+
+              <div className="mt-8 flex flex-wrap justify-between gap-3">
+                <button disabled={idx === 0} onClick={() => setIdx((value) => value - 1)} className="rounded-xl border px-4 py-3 text-sm font-bold disabled:opacity-30">
+                  Sebelumnya
+                </button>
+                <button onClick={() => setIdx((value) => Math.min(questions.length - 1, value + 1))} disabled={idx === questions.length - 1} className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white disabled:opacity-30">
+                  Soal berikutnya
+                </button>
+              </div>
+            </section>
+
+            <aside className="h-fit rounded-3xl border bg-white p-5">
+              <h3 className="font-black">Navigasi soal</h3>
+              <p className="mt-1 text-xs text-slate-500">{answeredCount} dijawab · {markedCount} ragu-ragu</p>
+              <div className="mt-4 grid grid-cols-5 gap-2">
+                {questions.map((item, index) => {
+                  const isMarked = marked.includes(item.id);
+                  const isAnswered = Boolean(answers[item.id]);
+                  const statusClass = isMarked
+                    ? "bg-amber-400 text-slate-900 hover:bg-amber-500"
+                    : isAnswered
+                      ? "bg-blue-600 text-white hover:bg-blue-700"
+                      : "bg-slate-200 text-slate-700 hover:bg-slate-300";
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => setIdx(index)}
+                      aria-label={"Ke soal " + (index + 1)}
+                      aria-current={idx === index ? "step" : undefined}
+                      className={"h-10 rounded-lg text-xs font-bold " + statusClass + (idx === index ? " ring-2 ring-blue-800 ring-offset-2" : "")}
+                    >
+                      {index + 1}
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="mt-4 space-y-1 text-xs text-slate-500">
+                <p><span className="mr-2 inline-block h-2.5 w-2.5 rounded-sm bg-blue-600" />Sudah dijawab</p>
+                <p><span className="mr-2 inline-block h-2.5 w-2.5 rounded-sm bg-amber-400" />Ragu-ragu</p>
+                <p><span className="mr-2 inline-block h-2.5 w-2.5 rounded-sm bg-slate-200" />Belum dijawab</p>
+              </div>
+              <button
+                onClick={() => setShowConfirmModal(true)}
+                disabled={submitting}
+                className="mt-6 w-full rounded-xl bg-emerald-600 px-4 py-3 text-sm font-bold text-white disabled:opacity-50"
+              >
+                Kumpulkan ujian
+              </button>
+            </aside>
+          </div>
+        )}
+
+        {done && result && (
+          <section className="mt-7 rounded-3xl border bg-white p-8 text-center">
+            <CheckCircle2 className="mx-auto text-emerald-600" size={42} />
+            <h2 className="mt-4 text-2xl font-black">Simulasi selesai</h2>
+            <div className="mx-auto mt-6 grid max-w-lg grid-cols-2 gap-3">
+              <div className="rounded-2xl bg-blue-50 p-5">
+                <p className="text-sm text-blue-700">Skor latihan</p>
+                <p className="mt-1 text-3xl font-black">{result.score}</p>
+              </div>
+              <div className="rounded-2xl bg-emerald-50 p-5">
+                <p className="text-sm text-emerald-700">Jawaban benar</p>
+                <p className="mt-1 text-3xl font-black">{result.correct_answers}/{result.total_questions}</p>
+              </div>
+            </div>
+            <p className="mt-4 text-sm text-slate-500">Waktu digunakan {clock(LIMIT - remaining)}. Skor dihitung dan disimpan di server.</p>
+            <p className="mt-3 text-sm font-bold text-emerald-700">Hasil tersimpan di riwayat akun.</p>
+            <button onClick={reset} className="mt-6 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 font-bold text-white">
+              <RotateCcw size={16} />Ulangi simulasi
+            </button>
+          </section>
+        )}
+
+        {showConfirmModal && started && (
+          <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/60 p-4" role="presentation">
+            <section role="dialog" aria-modal="true" aria-labelledby="confirm-title" className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
+              <h2 id="confirm-title" className="text-xl font-black text-slate-900">Kumpulkan ujian sekarang?</h2>
+              <p className="mt-2 text-sm text-slate-600">Periksa ringkasan jawaban sebelum mengakhiri simulasi.</p>
+              <div className="mt-5 grid grid-cols-3 gap-2 text-center">
+                <div className="rounded-xl bg-blue-50 p-3">
+                  <p className="text-2xl font-black text-blue-700">{answeredCount}</p>
+                  <p className="text-xs text-blue-800">Dijawab</p>
+                </div>
+                <div className="rounded-xl bg-amber-50 p-3">
+                  <p className="text-2xl font-black text-amber-700">{markedCount}</p>
+                  <p className="text-xs text-amber-800">Ragu-ragu</p>
+                </div>
+                <div className="rounded-xl bg-slate-100 p-3">
+                  <p className="text-2xl font-black text-slate-700">{unansweredCount}</p>
+                  <p className="text-xs text-slate-600">Kosong</p>
+                </div>
+              </div>
+              {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
+              <div className="mt-6 flex gap-3">
+                <button onClick={() => { setShowConfirmModal(false); setError(""); }} disabled={submitting} className="flex-1 rounded-xl border px-4 py-3 text-sm font-bold text-slate-700 disabled:opacity-50">
+                  Batal
+                </button>
+                <button onClick={() => void finish()} disabled={submitting} className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-bold text-white disabled:opacity-50">
+                  {submitting && <LoaderCircle size={16} className="animate-spin" />}
+                  {submitting ? "Mengirim..." : "Ya, Kumpulkan"}
+                </button>
+              </div>
+            </section>
+          </div>
+        )}
+
+        {error && !showConfirmModal && <p className="mt-4 text-sm text-red-600">{error}</p>}
+      </div>
+    </main>
+  );
 }
