@@ -162,7 +162,8 @@ export default function App() {
           <Text style={styles.sectionTitle}>Akun kamu</Text>
           <View style={styles.panel}>
             <Text style={styles.label}>EMAIL</Text>
-            <Text style={styles.accountEmail}>{session.user.email}</Text>\n            <Text style={styles.planPill}>Paket {planLabel}</Text>
+            <Text style={styles.accountEmail}>{session.user.email}</Text>
+            <Text style={styles.planPill}>Paket {planLabel}</Text>
             <Text style={styles.mutedSmall}>Akun terhubung ke SuksesCPNS.</Text>
           </View>
           <Text style={styles.sectionTitle}>Menu belajar</Text>
