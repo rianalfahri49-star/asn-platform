@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   AppState,
   KeyboardAvoidingView,
+  Linking,
   Platform,
   Pressable,
   SafeAreaView,
@@ -46,6 +47,52 @@ export default function App() {
     });
 
     return () => listener.subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (!isSupabaseConfigured) return;
+    let active = true;
+
+    async function handleAuthUrl(url: string | null) {
+      if (!url || !active) return;
+      try {
+        const parsed = new URL(url);
+        const code = parsed.searchParams.get("code");
+        const tokenHash = parsed.searchParams.get("token_hash");
+        const otpType = parsed.searchParams.get("type");
+
+        if (code) {
+          const { error } = await supabase.auth.exchangeCodeForSession(code);
+          if (error) throw error;
+          if (active) setMessage("Email berhasil dikonfirmasi. Akun siap digunakan.");
+          return;
+        }
+
+        if (tokenHash && (otpType === "signup" || otpType === "email" || otpType === "recovery")) {
+          const { error } = await supabase.auth.verifyOtp({
+            token_hash: tokenHash,
+            type: otpType,
+          });
+          if (error) throw error;
+          if (active) setMessage(
+            otpType === "recovery"
+              ? "Tautan pemulihan valid. Silakan lanjutkan pengaturan kata sandi."
+              : "Email berhasil dikonfirmasi. Akun siap digunakan."
+          );
+        }
+      } catch (error) {
+        if (active) setMessage(error instanceof Error ? error.message : "Tautan autentikasi tidak valid atau sudah kedaluwarsa.");
+      }
+    }
+
+    void Linking.getInitialURL().then(handleAuthUrl);
+    const subscription = Linking.addEventListener("url", ({ url }) => {
+      void handleAuthUrl(url);
+    });
+    return () => {
+      active = false;
+      subscription.remove();
+    };
   }, []);
 
   useEffect(() => {
@@ -103,6 +150,7 @@ export default function App() {
         const { data, error } = await supabase.auth.signUp({
           email: email.trim(),
           password,
+          options: { emailRedirectTo: "suksescpns://confirm-email" },
         });
         if (error) throw error;
         if (!data.session) {
@@ -139,6 +187,21 @@ export default function App() {
         <Text style={styles.brand}>SuksesCPNS</Text>
         <Text style={styles.heading}>Konfigurasi belum lengkap</Text>
         <Text style={styles.body}>Isi EXPO_PUBLIC_SUPABASE_URL dan EXPO_PUBLIC_SUPABASE_ANON_KEY pada file .env lokal sebelum menjalankan aplikasi.</Text>
+      </SafeAreaView>
+    );
+  }
+
+  if (session && !session.user.email_confirmed_at) {
+    return (
+      <SafeAreaView style={styles.center}>
+        <StatusBar barStyle="dark-content" />
+        <Text style={styles.brand}>SuksesCPNS</Text>
+        <Text style={styles.heading}>Konfirmasi email diperlukan</Text>
+        <Text style={styles.body}>Buka email yang kamu gunakan untuk mendaftar, lalu tekan tautan konfirmasi. Setelah itu kembali ke aplikasi.</Text>
+        {message ? <Text style={styles.message}>{message}</Text> : null}
+        <Pressable style={styles.secondaryButton} onPress={handleSignOut} disabled={busy}>
+          <Text style={styles.secondaryButtonText}>{busy ? "Memproses..." : "Keluar akun"}</Text>
+        </Pressable>
       </SafeAreaView>
     );
   }
