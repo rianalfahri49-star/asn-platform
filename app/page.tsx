@@ -1,4 +1,5 @@
 import Link from "next/link";
+import HomeAuthActions from "./home-auth-actions";
 import { ArrowRight, BookOpen, BrainCircuit, CheckCircle2, Clock3, GraduationCap, ShieldCheck, Sparkles, Target, Trophy, Users, Zap } from "lucide-react";
 
 const programs = [
@@ -34,7 +35,7 @@ export default function Home() {
             <a href="#tentang" className="transition hover:text-blue-600">Tentang</a>
           </nav>
           <div className="flex items-center gap-3">
-            <Link href="/masuk" className="hidden rounded-xl px-4 py-2.5 text-sm font-bold text-blue-700 transition hover:bg-blue-50 sm:inline-flex">Masuk</Link>
+            <HomeAuthActions />
             <Link href="/latihan" className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-600/20 transition hover:-translate-y-0.5 hover:bg-blue-700">Mulai belajar <ArrowRight size={16} /></Link>
           </div>
         </div>
