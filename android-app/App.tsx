@@ -85,7 +85,7 @@ export default function App() {
       }
     }
 
-    void Linking.getInitialURL().then(handleAuthUrl);
+    void Linking.getInitialURL().then((url) => handleAuthUrl(url ?? null));
     const subscription = Linking.addEventListener("url", ({ url }) => {
       void handleAuthUrl(url);
     });
