@@ -205,17 +205,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: 0,
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.dashboard_outlined),
-            selectedIcon: Icon(Icons.dashboard_rounded), label: 'Home'),
-          NavigationDestination(icon: Icon(Icons.groups_outlined), label: 'Siswa'),
-          NavigationDestination(icon: Icon(Icons.library_books_outlined), label: 'Konten'),
-          NavigationDestination(icon: Icon(Icons.bar_chart_rounded), label: 'Laporan'),
-          NavigationDestination(icon: Icon(Icons.menu_rounded), label: 'Lainnya'),
-        ],
-      ),
+
     );
   }
 }
@@ -286,7 +276,6 @@ class _ModuleTile extends StatelessWidget {
           Text(subtitle, style: const TextStyle(color: AppTheme.muted, fontSize: 12)),
         ],
       )),
-      const Icon(Icons.chevron_right_rounded, color: AppTheme.muted),
     ]),
   );
 }
