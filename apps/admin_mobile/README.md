@@ -106,3 +106,4 @@ Catatan: email OTP khusus ini bukan Supabase Auth MFA AAL2 bawaan. Kebijakan RLS
 - Menu transaksi hanya membaca status dari database. Aplikasi tidak dapat mengubah status pembayaran; webhook penyedia pembayaran tetap menjadi sumber status.
 - Build CI memakai kredensial placeholder hanya untuk memeriksa kompilasi dan menghasilkan artifact uji. APK itu tidak dapat dipakai untuk login ke project produksi. Build produksi harus memakai URL dan publishable key project yang benar.
 - Perubahan akun (ban/unban, hapus user, ubah role) sengaja tidak disediakan dari aplikasi mobile sampai endpoint server-side dengan audit log dan kontrol izin disiapkan.
+- Pengeluaran OTP dan kenaikan penghitung percobaan memakai fungsi SQL atomik dengan advisory lock agar permintaan paralel tidak melewati cooldown, batas permintaan, atau batas percobaan. Fungsi ini baru aktif setelah `supabase/sql/admin_email_otp.sql` diterapkan.
