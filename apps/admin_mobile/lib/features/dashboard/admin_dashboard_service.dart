@@ -46,10 +46,8 @@ class AdminDashboardService {
 
   Future<_CountResult> _count(String table) async {
     try {
-      final response = await _client
-          .from(table)
-          .select('*', const FetchOptions(count: CountOption.exact, head: true));
-      return _CountResult(response.count ?? 0, null);
+      final count = await _client.from(table).count(CountOption.exact);
+      return _CountResult(count, null);
     } on PostgrestException catch (error) {
       return _CountResult(0, error.message);
     } catch (error) {
