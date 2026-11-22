@@ -5,6 +5,7 @@ import '../../theme/app_theme.dart';
 import '../students/students_screen.dart';
 import '../content/content_screen.dart';
 import '../reports/reports_screen.dart';
+import '../payments/payments_screen.dart';
 import 'admin_dashboard_service.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -137,7 +138,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     onRetry: _refresh);
                 }
                 final stats = [
-                  _DashboardStat('Akun terdaftar', data.students,
+                  _DashboardStat('Total profil', data.students,
                     Icons.groups_2_outlined, AppTheme.blue),
                   _DashboardStat('Bank soal', data.questions,
                     Icons.quiz_outlined, AppTheme.emerald),
@@ -201,6 +202,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
               subtitle: 'Pantau pengerjaan ujian dan rata-rata skor',
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const ReportsScreen()),
+              ),
+            ),
+            _ModuleTile(
+              icon: Icons.payments_outlined, title: 'Transaksi pembayaran',
+              subtitle: 'Pantau pembayaran paket premium',
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const PaymentsScreen()),
               ),
             ),
             const SizedBox(height: 12),
