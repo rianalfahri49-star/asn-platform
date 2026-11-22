@@ -12,7 +12,8 @@ Aplikasi Android khusus administrator Sukses CPNS. Folder ini terisolasi dari ap
 - [x] Edge Function untuk mengirim dan memverifikasi OTP
 - [x] SQL untuk challenge OTP, sesi terverifikasi, dan RLS admin
 - [ ] Konfigurasi domain pengirim email dan secrets
-- [ ] Terapkan SQL ke project Supabase
+- [x] Terapkan migration direktori siswa `202611220004_admin_student_directory.sql` ke project Supabase
+- [ ] Terapkan SQL OTP/RLS ke project Supabase (menunggu website admin siap)
 - [ ] Deploy Edge Function
 - [ ] Jalankan pengujian Flutter/Android
 - [x] Statistik dashboard dari Supabase
@@ -99,7 +100,7 @@ Catatan: email OTP khusus ini bukan Supabase Auth MFA AAL2 bawaan. Kebijakan RLS
 
 ## Catatan fitur dan keamanan
 
-- Direktori siswa memakai RPC `admin_list_students` pada migration `202611220004_admin_student_directory.sql`. Fungsi hanya mengembalikan kolom profil yang diperlukan dan mengecualikan akun ber-role admin.
+- Direktori siswa memakai RPC `admin_list_students` pada migration `202611220004_admin_student_directory.sql`. Migration ini sudah diterapkan pada project Supabase produksi. Fungsi hanya mengembalikan kolom profil yang diperlukan dan mengecualikan akun ber-role admin.
 - Jika tabel sesi OTP `admin_verified_sessions` sudah dipasang, RPC direktori siswa juga memeriksa sesi OTP terverifikasi.
 - Menu konten dan laporan memerlukan migration platform, bank soal, premium access, serta SQL OTP/RLS admin yang sesuai.
 - Menu transaksi hanya membaca status dari database. Aplikasi tidak dapat mengubah status pembayaran; webhook penyedia pembayaran tetap menjadi sumber status.
