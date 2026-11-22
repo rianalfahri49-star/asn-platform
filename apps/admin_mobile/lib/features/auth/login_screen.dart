@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../theme/app_theme.dart';
+import '../dashboard/dashboard_screen.dart';
+import 'admin_auth_service.dart';
+import 'otp_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -13,7 +17,15 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  late final AdminAuthService _authService;
   bool _obscurePassword = true;
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _authService = AdminAuthService(Supabase.instance.client);
+  }
 
   @override
   void dispose() {
@@ -22,12 +34,49 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _continue() {
-    if (!_formKey.currentState!.validate()) return;
+  Future<void> _continue() async {
+    if (!_formKey.currentState!.validate() || _isLoading) return;
+    setState(() => _isLoading = true);
+
+    try {
+      await _authService.signIn(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+      await _authService.requestEmailOtp();
+
+      if (!mounted) return;
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => OtpVerificationScreen(
+            email: _emailController.text.trim(),
+            onVerify: (code) async {
+              await _authService.verifyEmailOtp(code);
+              if (!mounted) return;
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (_) => const DashboardScreen()),
+                (_) => false,
+              );
+            },
+            onResend: _authService.requestEmailOtp,
+          ),
+        ),
+      );
+    } on AuthException catch (error) {
+      await _authService.signOut();
+      _showError(error.message);
+    } catch (error) {
+      await _authService.signOut();
+      _showError(error.toString().replaceFirst('Exception: ', ''));
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  void _showError(String message) {
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Tampilan login siap. Integrasi autentikasi menunggu konfigurasi OTP.'),
-      ),
+      SnackBar(content: Text(message), behavior: SnackBarBehavior.floating),
     );
   }
 
@@ -95,10 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     const SizedBox(height: 34),
-                    const Text(
-                      'Email',
-                      style: TextStyle(fontWeight: FontWeight.w700),
-                    ),
+                    const Text('Email', style: TextStyle(fontWeight: FontWeight.w700)),
                     const SizedBox(height: 9),
                     TextFormField(
                       controller: _emailController,
@@ -110,17 +156,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       validator: (value) {
                         final email = value?.trim() ?? '';
-                        if (email.isEmpty || !email.contains('@')) {
+                        if (email.isEmpty || !RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email)) {
                           return 'Masukkan alamat email yang valid.';
                         }
                         return null;
                       },
                     ),
                     const SizedBox(height: 20),
-                    const Text(
-                      'Password',
-                      style: TextStyle(fontWeight: FontWeight.w700),
-                    ),
+                    const Text('Password', style: TextStyle(fontWeight: FontWeight.w700)),
                     const SizedBox(height: 9),
                     TextFormField(
                       controller: _passwordController,
@@ -130,20 +173,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         hintText: 'Masukkan password',
                         prefixIcon: const Icon(Icons.lock_outline_rounded),
                         suffixIcon: IconButton(
-                          onPressed: () => setState(
-                            () => _obscurePassword = !_obscurePassword,
-                          ),
-                          icon: Icon(
-                            _obscurePassword
-                                ? Icons.visibility_outlined
-                                : Icons.visibility_off_outlined,
-                          ),
+                          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                          icon: Icon(_obscurePassword
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined),
                         ),
                       ),
                       validator: (value) {
-                        if ((value ?? '').length < 8) {
-                          return 'Password minimal 8 karakter.';
-                        }
+                        if ((value ?? '').length < 8) return 'Password minimal 8 karakter.';
                         return null;
                       },
                     ),
@@ -152,17 +189,26 @@ class _LoginScreenState extends State<LoginScreen> {
                       width: double.infinity,
                       height: 54,
                       child: FilledButton(
-                        onPressed: _continue,
+                        onPressed: _isLoading ? null : _continue,
                         style: FilledButton.styleFrom(
                           backgroundColor: AppTheme.blue,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
                           ),
                         ),
-                        child: const Text(
-                          'Masuk ke Dashboard',
-                          style: TextStyle(fontWeight: FontWeight.w700),
-                        ),
+                        child: _isLoading
+                            ? const SizedBox(
+                                height: 21,
+                                width: 21,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Text(
+                                'Masuk dan Kirim OTP',
+                                style: TextStyle(fontWeight: FontWeight.w700),
+                              ),
                       ),
                     ),
                     const SizedBox(height: 22),
