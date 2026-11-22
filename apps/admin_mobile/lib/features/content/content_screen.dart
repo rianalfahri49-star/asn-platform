@@ -132,14 +132,22 @@ class _ContentScreenState extends State<ContentScreen> with SingleTickerProvider
                 SizedBox(width: double.infinity, child: FilledButton(
                   onPressed: saving ? null : () async {
                     if (!formKey.currentState!.validate()) return;
-                    if (options.where((v) => v.trim().isNotEmpty).length < 2) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Isi minimal dua pilihan jawaban.')));
+                    final trimmedOptions = options.map((v) => v.trim()).toList();
+                    final firstBlank = trimmedOptions.indexOf('');
+                    final hasGap = firstBlank >= 0 &&
+                        trimmedOptions.skip(firstBlank).any((v) => v.isNotEmpty);
+                    final optionCount = trimmedOptions.where((v) => v.isNotEmpty).length;
+                    if (optionCount < 2 || hasGap ||
+                        answer.codeUnitAt(0) - 65 >= optionCount) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text('Isi pilihan secara berurutan (minimal A dan B) dan pastikan kunci jawaban tersedia.'),
+                      ));
                       return;
                     }
                     refresh(() => saving = true);
                     final payload = {
                       'category': category, 'topic': topic.trim(), 'question': question.trim(),
-                      'options': options.where((v) => v.trim().isNotEmpty).toList(),
+                      'options': trimmedOptions.take(optionCount).toList(),
                       'correct_answer': answer, 'explanation': explanation.trim(),
                       'is_published': published, 'is_premium': premium,
                     };
