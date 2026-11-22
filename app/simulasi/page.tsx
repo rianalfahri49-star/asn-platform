@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
 import { ArrowLeft, CheckCircle2, Clock3, Flag, LoaderCircle, RotateCcw } from "lucide-react";
-import { submitExamAction, type RawExamAnswer } from "./actions";
+import { getExamReviewAction, submitExamAction, type ExamReviewItem, type RawExamAnswer } from "./actions";
 
 type Question = {
   id: string;
@@ -57,6 +57,7 @@ export default function SimulasiPage() {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState<Result | null>(null);
+  const [review, setReview] = useState<ExamReviewItem[]>([]);
 
   const load = useCallback(async () => {
     if (!db) {
@@ -108,6 +109,10 @@ export default function SimulasiPage() {
       return;
     }
 
+    const reviewResponse = await getExamReviewAction(response.result.attempt_id);
+    if (reviewResponse.success) setReview(reviewResponse.items);
+    else setError(reviewResponse.error);
+
     setResult(response.result);
     setDone(true);
     setStarted(false);
@@ -136,6 +141,7 @@ export default function SimulasiPage() {
     setShowConfirmModal(false);
     setError("");
     setResult(null);
+    setReview([]);
     void load();
   }
 
