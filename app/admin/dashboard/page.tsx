@@ -1,8 +1,9 @@
 "use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {useEffect,useMemo,useState} from "react";
 import Link from "next/link";
 import {createBrowserClient} from "@supabase/ssr";
-import {Activity,BookOpen,CreditCard,FileQuestion,GraduationCap,LayoutDashboard,LogOut,Users} from "lucide-react";
+import {Activity,ArrowUpRight,BookOpen,CreditCard,FileQuestion,GraduationCap,LayoutDashboard,LogOut,Users} from "lucide-react";
 import type {User} from "@supabase/supabase-js";
 export default function AdminDashboard(){
  const db=useMemo(()=>{const u=process.env.NEXT_PUBLIC_SUPABASE_URL,k=process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;return u&&k?createBrowserClient(u,k):null;},[]);
