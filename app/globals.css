@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -15,7 +17,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
 
 
 /* Celadon-inspired Sukses CPNS landing page */
-@import url('https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap');
 .celadon-home{--c-ink:#1e3440;--c-muted:#6d7d82;--c-jade:#80cdb0;--c-jade-dark:#347d65;--c-sky:#dcebf0;--c-cream:#f4f7f5;--c-line:#dce7e2;--c-white:#fff;color:var(--c-ink);background:#f1f6f3;font-family:'Albert Sans',Arial,sans-serif;overflow:hidden}
 .celadon-home h1,.celadon-home h2,.celadon-home h3,.celadon-home b,.celadon-home strong{font-family:'Outfit','Albert Sans',sans-serif}
 .celadon-container{width:min(1160px,calc(100% - 48px));margin-inline:auto}
@@ -154,3 +155,58 @@ button, a { -webkit-tap-highlight-color: transparent; }
 @media(max-width:1020px){.celadon-links{gap:15px}.celadon-links a{font-size:11px}.celadon-actions .celadon-button{padding:11px 13px}.celadon-hero-grid{gap:35px}.celadon-float-top{left:0}.celadon-float-bottom{right:0}}
 @media(max-width:800px){.celadon-links{display:none}.celadon-mobile-menu{display:block}.celadon-actions{margin-left:auto}.celadon-hero{padding:62px 0}.celadon-hero-grid{grid-template-columns:1fr;gap:25px}.celadon-hero-copy{text-align:center}.celadon-hero-copy h1,.celadon-hero-copy>p{margin-left:auto;margin-right:auto}.celadon-hero-buttons,.celadon-proof{justify-content:center}.celadon-visual{min-height:470px}.celadon-float-top{left:4%}.celadon-float-bottom{right:4%}.celadon-feature-grid{grid-template-columns:repeat(2,1fr)}.celadon-material-grid{grid-template-columns:1fr 1fr}.celadon-tryout{grid-template-columns:1fr;gap:30px}.celadon-split-heading{align-items:flex-start;flex-direction:column;gap:10px}.celadon-dashboard-preview{grid-template-columns:170px 1fr}.celadon-footer-inner{flex-wrap:wrap}}
 @media(max-width:560px){.celadon-container{width:calc(100% - 32px)}.celadon-nav{height:68px;gap:10px}.celadon-brand{font-size:16px}.celadon-brand-mark{width:37px;height:37px}.celadon-actions{display:none}.celadon-hero{padding:48px 0 52px}.celadon-hero-copy h1{font-size:42px}.celadon-hero-copy>p{font-size:14px}.celadon-proof{gap:10px 14px;font-size:10px}.celadon-visual{min-height:430px}.celadon-board{padding:22px;border-radius:24px}.celadon-board h2{font-size:23px}.celadon-float{padding:10px 12px}.celadon-float-top{top:3px;left:-3px}.celadon-float-bottom{bottom:3px;right:-3px}.celadon-trust .celadon-container>div{flex-wrap:wrap;gap:9px 12px;font-size:10px}.celadon-section{padding:64px 0}.celadon-section-heading h2,.celadon-split-heading h2,.celadon-tryout h2{font-size:31px}.celadon-feature-grid,.celadon-material-grid{grid-template-columns:1fr}.celadon-material-card>p{min-height:0}.celadon-dashboard-preview{grid-template-columns:1fr}.celadon-dashboard-sidebar{display:none}.celadon-dashboard-main{padding:17px}.celadon-dashboard-stats{grid-template-columns:1fr}.celadon-dashboard-lower{grid-template-columns:1fr}.celadon-footer-inner{align-items:flex-start;flex-direction:column;gap:12px}.celadon-footer p{margin:0}.celadon-footer-inner>div{gap:12px}.celadon-final-cta{padding:38px 18px}}
+
+
+/* Shared Celadon theme for all student pages */
+main:not(.celadon-home) {
+  min-height: 100vh;
+  color: #203740;
+  background: #f1f6f3;
+  font-family: 'Albert Sans', Arial, sans-serif;
+}
+main:not(.celadon-home) h1,
+main:not(.celadon-home) h2,
+main:not(.celadon-home) h3,
+main:not(.celadon-home) button {
+  font-family: 'Outfit', 'Albert Sans', sans-serif;
+}
+main:not(.celadon-home) header {
+  background: rgba(248, 251, 249, .94);
+  border-color: #dce7e2;
+}
+main:not(.celadon-home) .bg-white { background-color: #f8fbf9 !important; }
+main:not(.celadon-home) .bg-slate-50 { background-color: #f1f6f3 !important; }
+main:not(.celadon-home) .bg-slate-100 { background-color: #e9f1ed !important; }
+main:not(.celadon-home) .bg-blue-50 { background-color: #e4f2e9 !important; }
+main:not(.celadon-home) .bg-blue-100 { background-color: #d9eee1 !important; }
+main:not(.celadon-home) .bg-blue-600,
+main:not(.celadon-home) .hover\\:bg-blue-700:hover {
+  background-color: #62b58f !important;
+  color: #153f32 !important;
+}
+main:not(.celadon-home) .bg-blue-950 { background-color: #244b3d !important; }
+main:not(.celadon-home) .bg-emerald-600 { background-color: #4e9e78 !important; }
+main:not(.celadon-home) .text-blue-600,
+main:not(.celadon-home) .text-blue-700,
+main:not(.celadon-home) .text-blue-800,
+main:not(.celadon-home) .text-blue-900 { color: #347d65 !important; }
+main:not(.celadon-home) .text-blue-100 { color: #e5f3eb !important; }
+main:not(.celadon-home) .border-blue-200,
+main:not(.celadon-home) .border-blue-500 { border-color: #8bc8a8 !important; }
+main:not(.celadon-home) .shadow-sm,
+main:not(.celadon-home) .shadow-xl {
+  box-shadow: 8px 10px 24px rgba(67, 103, 83, .09), -5px -5px 16px rgba(255,255,255,.8);
+}
+main:not(.celadon-home) input,
+main:not(.celadon-home) textarea,
+main:not(.celadon-home) select {
+  border-color: #d7e4dc;
+  background-color: #fbfdfb;
+  color: #203740;
+}
+main:not(.celadon-home) input:focus,
+main:not(.celadon-home) textarea:focus,
+main:not(.celadon-home) select:focus {
+  outline: 2px solid #9ad0b2;
+  outline-offset: 1px;
+}
