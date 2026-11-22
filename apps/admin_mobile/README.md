@@ -25,9 +25,10 @@ Aplikasi Android khusus administrator Sukses CPNS. Folder ini terisolasi dari ap
 
 ## Konfigurasi lokal
 
-Gunakan Flutter SDK dan Android SDK. Dari folder ini:
+Gunakan Flutter SDK dan Android SDK. Karena folder aplikasi ini belum menyertakan folder platform Android yang dihasilkan Flutter, buat scaffolding Android satu kali dari folder ini:
 
 ```bash
+flutter create --platforms=android --org com.suksescpns --project-name sukses_cpns_admin .
 flutter pub get
 flutter run \
   --dart-define=SUPABASE_URL=https://YOUR_PROJECT_ID.supabase.co \
