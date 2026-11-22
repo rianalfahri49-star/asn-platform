@@ -117,47 +117,31 @@ Deno.serve(async (req: Request) => {
   });
 
   if (body.action === "send") {
-    const now = new Date();
-    const fifteenMinutesAgo = new Date(now.getTime() - 15 * 60 * 1000).toISOString();
-    const { count } = await admin
-      .from("admin_email_otp_challenges")
-      .select("id", { count: "exact", head: true })
-      .eq("user_id", user.id)
-      .eq("session_id", sessionId)
-      .gte("created_at", fifteenMinutesAgo);
-
-    if ((count ?? 0) >= 5) return json({ error: "Terlalu banyak permintaan OTP. Coba lagi nanti." }, 429);
-
-    const { data: latest } = await admin
-      .from("admin_email_otp_challenges")
-      .select("created_at")
-      .eq("user_id", user.id)
-      .eq("session_id", sessionId)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-    if (latest && now.getTime() - new Date(latest.created_at).getTime() < 60_000) {
-      return json({ error: "Tunggu 60 detik sebelum meminta OTP baru." }, 429);
-    }
-
-    await admin
-      .from("admin_email_otp_challenges")
-      .update({ consumed_at: now.toISOString() })
-      .eq("user_id", user.id)
-      .eq("session_id", sessionId)
-      .is("consumed_at", null);
-
     const code = generateCode();
     const codeHash = await hashCode(code, user.id, sessionId, pepper);
-    const { error: insertError } = await admin.from("admin_email_otp_challenges").insert({
-      user_id: user.id,
-      session_id: sessionId,
-      code_hash: codeHash,
-      expires_at: new Date(now.getTime() + 5 * 60 * 1000).toISOString(),
-    });
-    if (insertError) {
-      console.error("OTP challenge insert failed", insertError);
+    const { data: challengeRows, error: challengeError } = await admin.rpc(
+      "admin_create_email_otp_challenge",
+      {
+        p_user_id: user.id,
+        p_session_id: sessionId,
+        p_code_hash: codeHash,
+      },
+    );
+
+    if (challengeError) {
+      const message = challengeError.message ?? "";
+      if (message.includes("OTP_RATE_LIMIT")) {
+        return json({ error: "Terlalu banyak permintaan OTP. Coba lagi nanti." }, 429);
+      }
+      if (message.includes("OTP_COOLDOWN")) {
+        return json({ error: "Tunggu 60 detik sebelum meminta OTP baru." }, 429);
+      }
+      console.error("OTP challenge creation failed", challengeError);
+      return json({ error: "Tidak dapat membuat kode verifikasi." }, 500);
+    }
+
+    const challenge = Array.isArray(challengeRows) ? challengeRows[0] : null;
+    if (!challenge?.challenge_id) {
       return json({ error: "Tidak dapat membuat kode verifikasi." }, 500);
     }
 
@@ -168,9 +152,7 @@ Deno.serve(async (req: Request) => {
       await admin
         .from("admin_email_otp_challenges")
         .update({ consumed_at: new Date().toISOString() })
-        .eq("user_id", user.id)
-        .eq("session_id", sessionId)
-        .eq("code_hash", codeHash)
+        .eq("id", challenge.challenge_id)
         .is("consumed_at", null);
       return json({ error: "Email OTP belum dapat dikirim. Hubungi administrator sistem." }, 503);
     }
@@ -201,12 +183,17 @@ Deno.serve(async (req: Request) => {
 
     const expectedHash = await hashCode(code, user.id, sessionId, pepper);
     if (!constantTimeEqual(expectedHash, challenge.code_hash)) {
-      await admin
-        .from("admin_email_otp_challenges")
-        .update({ attempts: challenge.attempts + 1 })
-        .eq("id", challenge.id)
-        .eq("attempts", challenge.attempts)
-        .is("consumed_at", null);
+      const { data: attempts, error: attemptError } = await admin.rpc(
+        "admin_increment_email_otp_attempt",
+        { p_challenge_id: challenge.id },
+      );
+      if (attemptError) {
+        console.error("OTP attempt counter failed", attemptError);
+        return json({ error: "Tidak dapat memproses verifikasi. Coba lagi." }, 500);
+      }
+      if (attempts == null || attempts >= 5) {
+        return json({ error: "Batas percobaan OTP tercapai. Minta kode baru." }, 429);
+      }
       return json({ error: "Kode OTP salah." }, 400);
     }
 
