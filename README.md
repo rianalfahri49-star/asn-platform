@@ -51,7 +51,7 @@ Platform belajar independen untuk persiapan seleksi CPNS dan PPPK.
 - `/materi`, `/latihan`, `/simulasi` belajar dan ujian
 - `/peringkat` leaderboard opt-in
 - `/paket` informasi Paket Reguler gratis
-- `/admin`, `/admin/materi` dashboard pengelola
+- `/admin`, `/admin/dashboard` dashboard pengelola\n- `/admin/pengguna`, `/admin/soal`, `/admin/materi`, `/admin/analitik`, `/admin/transaksi` modul administrasi
 - `/api/health` health check
 - `/kebijakan-privasi`, `/syarat-ketentuan` kebijakan layanan
 
