@@ -1,0 +1,1 @@
+import AdminDataView from "../data-view"; export default function Page(){return <AdminDataView mode="analitik"/>;}
