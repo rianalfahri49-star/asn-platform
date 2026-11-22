@@ -21,7 +21,17 @@ type Result = {
 };
 
 const LETTERS = ["A", "B", "C", "D", "E"];
-const LIMIT = 110 * 60;
+const MAX_LIMIT = 110 * 60;
+const SECONDS_PER_QUESTION = 60;
+
+function shuffleQuestions(items: Question[]) {
+  const shuffled = [...items];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
 
 function clock(seconds: number) {
   return Math.floor(seconds / 60).toString().padStart(2, "0") + ":" +
@@ -39,7 +49,7 @@ export default function SimulasiPage() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [marked, setMarked] = useState<string[]>([]);
   const [idx, setIdx] = useState(0);
-  const [remaining, setRemaining] = useState(LIMIT);
+  const [remaining, setRemaining] = useState(0);
   const [started, setStarted] = useState(false);
   const [done, setDone] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -62,7 +72,11 @@ export default function SimulasiPage() {
       .eq("is_premium", false)
       .limit(110);
     if (loadError) setError(loadError.message);
-    else setQuestions((data || []) as Question[]);
+    else {
+      const shuffled = shuffleQuestions((data || []) as Question[]);
+      setQuestions(shuffled);
+      setRemaining(Math.min(MAX_LIMIT, shuffled.length * SECONDS_PER_QUESTION));
+    }
     setLoading(false);
   }, [db]);
 
@@ -86,7 +100,8 @@ export default function SimulasiPage() {
       is_marked: marked.includes(item.id),
     }));
 
-    const response = await submitExamAction(rawAnswers, LIMIT - remaining);
+    const sessionLimit = Math.min(MAX_LIMIT, questions.length * SECONDS_PER_QUESTION);
+    const response = await submitExamAction(rawAnswers, sessionLimit - remaining);
     if (!response.success) {
       setError(response.error);
       setSubmitting(false);
@@ -114,7 +129,7 @@ export default function SimulasiPage() {
     setAnswers({});
     setMarked([]);
     setIdx(0);
-    setRemaining(LIMIT);
+    setRemaining(0);
     setStarted(false);
     setDone(false);
     setSubmitting(false);
@@ -140,7 +155,7 @@ export default function SimulasiPage() {
         <p className="text-xs font-extrabold uppercase tracking-widest text-blue-600">Ujian berbatas waktu</p>
         <h1 className="mt-2 text-3xl font-black">Simulasi CAT SKD</h1>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-          Simulasi menggunakan soal yang diterbitkan admin. Durasi maksimal 110 menit; sesi akan dikumpulkan otomatis saat waktu habis.
+          Simulasi menggunakan soal yang diterbitkan admin. Durasi mengikuti jumlah soal yang tersedia (1 menit per soal, maksimal 110 menit). Sesi dikumpulkan otomatis saat waktu habis.
         </p>
 
         {!started && !done && (
@@ -280,7 +295,7 @@ export default function SimulasiPage() {
                 <p className="mt-1 text-3xl font-black">{result.correct_answers}/{result.total_questions}</p>
               </div>
             </div>
-            <p className="mt-4 text-sm text-slate-500">Waktu digunakan {clock(LIMIT - remaining)}. Skor dihitung dan disimpan di server.</p>
+            <p className="mt-4 text-sm text-slate-500">Waktu digunakan {clock(Math.min(MAX_LIMIT, questions.length * SECONDS_PER_QUESTION) - remaining)}. Skor dihitung dan disimpan di server.</p>
             <p className="mt-3 text-sm font-bold text-emerald-700">Hasil tersimpan di riwayat akun.</p>
             <button onClick={reset} className="mt-6 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 font-bold text-white">
               <RotateCcw size={16} />Ulangi simulasi
