@@ -16,7 +16,7 @@ Future<void> main() async {
 
   await Supabase.initialize(
     url: supabaseUrl,
-    publishableKey: supabaseKey,
+    anonKey: supabaseKey,
   );
 
   runApp(const SuksesCpnsAdminApp());
