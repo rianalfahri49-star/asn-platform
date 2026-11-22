@@ -143,16 +143,18 @@ class _ContentScreenState extends State<ContentScreen> with SingleTickerProvider
                       'correct_answer': answer, 'explanation': explanation.trim(),
                       'is_published': published, 'is_premium': premium,
                     };
-                    final result = item == null
-                      ? await _db.from('questions').insert(payload)
-                      : await _db.from('questions').update(payload).eq('id', item['id']);
-                    if (result.error != null) {
+                    try {
+                      if (item == null) {
+                        await _db.from('questions').insert(payload);
+                      } else {
+                        await _db.from('questions').update(payload).eq('id', item['id']);
+                      }
+                      if (sheetContext.mounted) Navigator.pop(sheetContext);
+                      await _loadQuestions();
+                    } catch (error) {
                       refresh(() => saving = false);
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(result.error!.message)));
-                      return;
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString())));
                     }
-                    if (sheetContext.mounted) Navigator.pop(sheetContext);
-                    await _loadQuestions();
                   },
                   child: Text(saving ? 'Menyimpan...' : 'Simpan soal'),
                 )),
@@ -219,16 +221,18 @@ class _ContentScreenState extends State<ContentScreen> with SingleTickerProvider
                       'content': content.trim(), 'video_url': video.trim().isEmpty ? null : video.trim(),
                       'is_published': published, 'is_premium': premium,
                     };
-                    final result = item == null
-                      ? await _db.from('learning_materials').insert(payload)
-                      : await _db.from('learning_materials').update(payload).eq('id', item['id']);
-                    if (result.error != null) {
+                    try {
+                      if (item == null) {
+                        await _db.from('learning_materials').insert(payload);
+                      } else {
+                        await _db.from('learning_materials').update(payload).eq('id', item['id']);
+                      }
+                      if (sheetContext.mounted) Navigator.pop(sheetContext);
+                      await _loadMaterials();
+                    } catch (error) {
                       refresh(() => saving = false);
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(result.error!.message)));
-                      return;
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString())));
                     }
-                    if (sheetContext.mounted) Navigator.pop(sheetContext);
-                    await _loadMaterials();
                   },
                   child: Text(saving ? 'Menyimpan...' : 'Simpan materi'),
                 )),
@@ -255,14 +259,16 @@ class _ContentScreenState extends State<ContentScreen> with SingleTickerProvider
       ),
     );
     if (confirmed != true) return;
-    final result = await _db.from(table).delete().eq('id', id);
-    if (!mounted) return;
-    if (result.error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(result.error!.message)));
-    } else if (table == 'questions') {
-      await _loadQuestions();
-    } else {
-      await _loadMaterials();
+    try {
+      await _db.from(table).delete().eq('id', id);
+      if (!mounted) return;
+      if (table == 'questions') {
+        await _loadQuestions();
+      } else {
+        await _loadMaterials();
+      }
+    } catch (error) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.toString())));
     }
   }
 
