@@ -164,7 +164,7 @@ export default function SimulasiPage() {
             <div className="mt-5 grid gap-3 sm:grid-cols-3">
               <div className="rounded-2xl bg-blue-50 p-4">
                 <p className="text-xs text-blue-700">Durasi</p>
-                <p className="mt-1 text-2xl font-black text-blue-950">110 menit</p>
+                <p className="mt-1 text-2xl font-black text-blue-950">{Math.ceil(Math.min(MAX_LIMIT, questions.length * SECONDS_PER_QUESTION) / 60)} menit</p>
               </div>
               <div className="rounded-2xl bg-blue-50 p-4">
                 <p className="text-xs text-blue-700">Soal tersedia</p>
