@@ -33,15 +33,15 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   Future<void> _verify() async {
     final code = _codeController.text.trim();
     if (code.length != 6) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Masukkan kode OTP 6 digit.')),
-      );
+      _showMessage('Masukkan kode OTP 6 digit.');
       return;
     }
 
     setState(() => _isSubmitting = true);
     try {
       await widget.onVerify(code);
+    } catch (error) {
+      _showMessage(error.toString().replaceFirst('Exception: ', ''));
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
@@ -51,9 +51,19 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     setState(() => _isResending = true);
     try {
       await widget.onResend();
+      _showMessage('Jika permintaan diterima, kode baru akan dikirim ke email.');
+    } catch (error) {
+      _showMessage(error.toString().replaceFirst('Exception: ', ''));
     } finally {
       if (mounted) setState(() => _isResending = false);
     }
+  }
+
+  void _showMessage(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), behavior: SnackBarBehavior.floating),
+    );
   }
 
   @override
@@ -93,7 +103,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    'Masukkan kode OTP 6 digit untuk melanjutkan sebagai administrator. Akun: ${widget.email}',
+                    'Kode OTP 6 digit dikirim ke alamat email admin: ${widget.email}',
                     style: const TextStyle(
                       color: AppTheme.muted,
                       height: 1.55,
@@ -140,14 +150,12 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                   Center(
                     child: TextButton(
                       onPressed: _isResending ? null : _resend,
-                      child: Text(
-                        _isResending ? 'Mengirim ulang...' : 'Kirim ulang kode',
-                      ),
+                      child: Text(_isResending ? 'Mengirim ulang...' : 'Kirim ulang kode'),
                     ),
                   ),
                   const SizedBox(height: 10),
                   const Text(
-                    'Kode verifikasi hanya dapat digunakan sekali dan memiliki batas waktu. Jangan bagikan kode ini kepada siapa pun.',
+                    'Kode berlaku 5 menit, hanya dapat digunakan sekali, dan maksimal 5 kali percobaan. Jangan bagikan kode ini kepada siapa pun.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: AppTheme.muted,
