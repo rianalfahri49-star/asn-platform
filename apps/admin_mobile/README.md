@@ -15,7 +15,7 @@ Aplikasi Android khusus administrator Sukses CPNS. Folder ini terisolasi dari ap
 - [x] Terapkan migration direktori siswa `202611220004_admin_student_directory.sql` ke project Supabase
 - [ ] Terapkan SQL OTP/RLS ke project Supabase (menunggu website admin siap)
 - [ ] Deploy Edge Function
-- [ ] Jalankan pengujian Flutter/Android
+- [x] Jalankan Flutter analyze, Flutter test, dan build APK release melalui GitHub Actions
 - [x] Statistik dashboard dari Supabase
 - [x] Direktori siswa: pencarian, detail, status akses, dan riwayat ujian
 - [x] Pengelolaan bank soal: tambah, edit, hapus, draft/terbit, premium
