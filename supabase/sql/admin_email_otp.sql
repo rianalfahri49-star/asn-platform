@@ -39,14 +39,12 @@ declare
   v_challenge_id uuid;
   v_expires_at timestamptz := v_now + interval '5 minutes';
 begin
-  perform pg_advisory_xact_lock(
-    hashtextextended(p_user_id::text || ':' || p_session_id::text, 0)
-  );
+  -- Rate-limit across all sessions for this account, not just one login session.
+  perform pg_advisory_xact_lock(hashtextextended(p_user_id::text, 0));
 
   select count(*) into v_recent_count
   from public.admin_email_otp_challenges c
   where c.user_id = p_user_id
-    and c.session_id = p_session_id
     and c.created_at >= v_now - interval '15 minutes';
 
   if v_recent_count >= 5 then
@@ -55,7 +53,7 @@ begin
 
   select c.created_at into v_latest_created
   from public.admin_email_otp_challenges c
-  where c.user_id = p_user_id and c.session_id = p_session_id
+  where c.user_id = p_user_id
   order by c.created_at desc
   limit 1;
 
@@ -65,7 +63,7 @@ begin
 
   update public.admin_email_otp_challenges
   set consumed_at = v_now
-  where user_id = p_user_id and session_id = p_session_id and consumed_at is null;
+  where user_id = p_user_id and consumed_at is null;
 
   insert into public.admin_email_otp_challenges (
     user_id, session_id, code_hash, expires_at
