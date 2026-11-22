@@ -15,7 +15,13 @@ Aplikasi Android khusus administrator Sukses CPNS. Folder ini terisolasi dari ap
 - [ ] Terapkan SQL ke project Supabase
 - [ ] Deploy Edge Function
 - [ ] Jalankan pengujian Flutter/Android
-- [ ] Hubungkan statistik dashboard ke query database
+- [x] Statistik dashboard dari Supabase
+- [x] Direktori siswa: pencarian, detail, status akses, dan riwayat ujian
+- [x] Pengelolaan bank soal: tambah, edit, hapus, draft/terbit, premium
+- [x] Pengelolaan materi: tambah, edit, hapus, draft/terbit, premium
+- [x] Laporan aktivitas ujian terbaru dan ringkasan skor
+- [x] Pemantauan transaksi pembayaran (read-only)
+- [x] GitHub Actions: Flutter analyze, test, dan build APK artifact
 
 ## Konfigurasi lokal
 
@@ -80,7 +86,21 @@ Catatan: email OTP khusus ini bukan Supabase Auth MFA AAL2 bawaan. Kebijakan RLS
 ## Struktur
 
 - `lib/features/auth`: login, OTP, dan layanan autentikasi
-- `lib/features/dashboard`: dashboard admin
+- `lib/features/dashboard`: dashboard admin dan statistik Supabase
+- `lib/features/students`: direktori siswa dan detail akun
+- `lib/features/content`: bank soal dan materi belajar
+- `lib/features/reports`: laporan pengerjaan ujian
+- `lib/features/payments`: pemantauan transaksi
 - `lib/theme`: tema dan komponen visual
 - `supabase/functions/admin-email-otp`: server OTP
 - `supabase/sql/admin_email_otp.sql`: skema dan kebijakan RLS
+
+
+## Catatan fitur dan keamanan
+
+- Direktori siswa memakai RPC `admin_list_students` pada migration `202611220004_admin_student_directory.sql`. Fungsi hanya mengembalikan kolom profil yang diperlukan dan mengecualikan akun ber-role admin.
+- Jika tabel sesi OTP `admin_verified_sessions` sudah dipasang, RPC direktori siswa juga memeriksa sesi OTP terverifikasi.
+- Menu konten dan laporan memerlukan migration platform, bank soal, premium access, serta SQL OTP/RLS admin yang sesuai.
+- Menu transaksi hanya membaca status dari database. Aplikasi tidak dapat mengubah status pembayaran; webhook penyedia pembayaran tetap menjadi sumber status.
+- Build CI memakai kredensial placeholder hanya untuk memeriksa kompilasi dan menghasilkan artifact uji. APK itu tidak dapat dipakai untuk login ke project produksi. Build produksi harus memakai URL dan publishable key project yang benar.
+- Perubahan akun (ban/unban, hapus user, ubah role) sengaja tidak disediakan dari aplikasi mobile sampai endpoint server-side dengan audit log dan kontrol izin disiapkan.
