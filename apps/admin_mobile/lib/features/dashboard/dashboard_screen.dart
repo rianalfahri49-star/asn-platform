@@ -3,6 +3,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../theme/app_theme.dart';
 import '../students/students_screen.dart';
+import '../content/content_screen.dart';
+import '../reports/reports_screen.dart';
 import 'admin_dashboard_service.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -187,17 +189,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 MaterialPageRoute(builder: (_) => const StudentsScreen()),
               ),
             ),
-            const _ModuleTile(
-              icon: Icons.library_books_outlined, title: 'Bank soal',
-              subtitle: 'Kelola soal TWK, TIU, dan TKP',
+            _ModuleTile(
+              icon: Icons.library_books_outlined, title: 'Bank soal & materi',
+              subtitle: 'Tambah, edit, terbitkan, dan hapus konten',
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const ContentScreen()),
+              ),
             ),
-            const _ModuleTile(
-              icon: Icons.menu_book_outlined, title: 'Materi belajar',
-              subtitle: 'Kelola materi dan kategori pembelajaran',
-            ),
-            const _ModuleTile(
+            _ModuleTile(
               icon: Icons.analytics_outlined, title: 'Laporan dan hasil',
-              subtitle: 'Pantau hasil ujian dan perkembangan siswa',
+              subtitle: 'Pantau pengerjaan ujian dan rata-rata skor',
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const ReportsScreen()),
+              ),
             ),
             const SizedBox(height: 12),
             const Text(
