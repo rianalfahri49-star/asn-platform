@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../theme/app_theme.dart';
+import '../students/students_screen.dart';
 import 'admin_dashboard_service.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -179,9 +180,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
             const Text('Menu administrasi', style: TextStyle(
               color: AppTheme.ink, fontSize: 17, fontWeight: FontWeight.w800)),
             const SizedBox(height: 12),
-            const _ModuleTile(
+            _ModuleTile(
               icon: Icons.people_alt_outlined, title: 'Manajemen siswa',
               subtitle: 'Daftar akun, status, dan aktivitas siswa',
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const StudentsScreen()),
+              ),
             ),
             const _ModuleTile(
               icon: Icons.library_books_outlined, title: 'Bank soal',
@@ -246,10 +250,11 @@ class _StatCard extends StatelessWidget {
 }
 
 class _ModuleTile extends StatelessWidget {
-  const _ModuleTile({required this.icon, required this.title, required this.subtitle});
+  const _ModuleTile({required this.icon, required this.title, required this.subtitle, this.onTap});
   final IconData icon;
   final String title;
   final String subtitle;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) => Container(
@@ -259,7 +264,10 @@ class _ModuleTile extends StatelessWidget {
       color: Colors.white, borderRadius: BorderRadius.circular(18),
       border: Border.all(color: const Color(0xFFE8EEF5)),
     ),
-    child: Row(children: [
+    child: InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(18),
+      child: Row(children: [
       Container(
         height: 44, width: 44,
         decoration: BoxDecoration(
@@ -276,7 +284,8 @@ class _ModuleTile extends StatelessWidget {
           Text(subtitle, style: const TextStyle(color: AppTheme.muted, fontSize: 12)),
         ],
       )),
-    ]),
+      if (onTap != null) const Icon(Icons.chevron_right_rounded, color: AppTheme.muted),
+    ])),
   );
 }
 
