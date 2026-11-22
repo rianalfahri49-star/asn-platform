@@ -10,6 +10,15 @@ type Question = { id: string; category: "TWK" | "TIU" | "TKP"; topic: string; qu
 type Result = { attempt_id: string; total_questions: number; correct_answers: number; score: number };
 const LETTERS = ["A", "B", "C", "D", "E"];
 
+function shuffleQuestions(items: Question[]) {
+  const shuffled = [...items];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
 function formatTime(seconds: number) {
   return Math.floor(seconds / 60).toString().padStart(2, "0") + ":" +
     Math.max(0, seconds % 60).toString().padStart(2, "0");
@@ -50,7 +59,7 @@ export default function LatihanPage() {
     if (category !== "SEMUA") query = query.eq("category", category);
     const { data, error: loadError } = await query;
     if (loadError) setError(loadError.message);
-    else setQuestions((data || []) as Question[]);
+    else setQuestions(shuffleQuestions((data || []) as Question[]));
     setLoading(false);
   }, [supabase, category]);
 
