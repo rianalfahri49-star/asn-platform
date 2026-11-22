@@ -1,106 +1,186 @@
+"use client";
+
 import Link from "next/link";
 import HomeAuthActions from "./home-auth-actions";
-import { ArrowRight, BookOpen, BrainCircuit, CheckCircle2, Clock3, GraduationCap, ShieldCheck, Sparkles, Target, Trophy, Users, Zap } from "lucide-react";
-
-const programs = [
-  { tag: "CPNS", title: "Persiapan CPNS", description: "Latihan SKD dengan materi TWK, TIU, dan TKP yang tersusun rapi.", icon: GraduationCap, tone: "blue", items: ["Materi dan rangkuman", "Latihan per subtes", "Simulasi CAT"] },
-  { tag: "PPPK", title: "Persiapan PPPK", description: "Belajar kompetensi sesuai bidang dan kebutuhan seleksi PPPK.", icon: BookOpen, tone: "violet", items: ["Kompetensi teknis", "Kompetensi manajerial", "Kompetensi sosial kultural"] },
-  { tag: "LATIHAN", title: "Simulasi CAT", description: "Biasakan diri dengan latihan berbatas waktu dan evaluasi hasil.", icon: BrainCircuit, tone: "cyan", items: ["Tampilan latihan terstruktur", "Hitung mundur waktu", "Evaluasi setelah selesai"] },
-];
+import {
+  ArrowRight, ArrowUpRight, BookOpen, Brain, CheckCircle2, Clock3,
+  GraduationCap, Layers3, ShieldCheck, Sparkles, Target, Trophy, Zap,
+} from "lucide-react";
 
 const features = [
-  { icon: Target, title: "Belajar lebih terarah", text: "Susun proses belajar berdasarkan kategori dan topik yang ingin dikuasai." },
-  { icon: Clock3, title: "Latihan dengan waktu", text: "Bangun kebiasaan mengerjakan soal dengan manajemen waktu." },
-  { icon: Trophy, title: "Pantau perkembangan", text: "Evaluasi hasil latihan untuk mengetahui bagian yang perlu ditingkatkan." },
-  { icon: ShieldCheck, title: "Akses yang aman", text: "Pengembangan akun dan data pengguna dirancang dengan perhatian pada keamanan." },
+  { icon: BookOpen, title: "Materi terstruktur", text: "Pelajari konsep TWK, TIU, dan TKP dengan alur yang lebih mudah diikuti." },
+  { icon: Brain, title: "Bank soal", text: "Latihan berdasarkan kategori dan topik untuk mengasah kemampuan." },
+  { icon: Clock3, title: "Simulasi CAT", text: "Biasakan diri mengerjakan soal dengan batas waktu dan navigasi ujian." },
+  { icon: Target, title: "Evaluasi progres", text: "Lihat hasil latihan dan kenali bagian yang perlu kamu tingkatkan." },
+  { icon: ShieldCheck, title: "Akun personal", text: "Riwayat pengerjaan tersimpan di akun agar progres tidak tercecer." },
+  { icon: Trophy, title: "Peringkat", text: "Jadikan pencapaian sebagai motivasi untuk belajar lebih konsisten." },
+];
+
+const subjects = [
+  { code: "TWK", title: "Tes Wawasan Kebangsaan", text: "Nasionalisme, integritas, bela negara, pilar negara, dan bahasa Indonesia.", icon: "W", tone: "mint", topics: ["Nasionalisme", "Integritas", "Bela negara"] },
+  { code: "TIU", title: "Tes Intelegensia Umum", text: "Verbal, numerik, figural, logika, dan penalaran analitis.", icon: "∑", tone: "blue", topics: ["Verbal", "Numerik", "Figural"] },
+  { code: "TKP", title: "Tes Karakteristik Pribadi", text: "Pelayanan publik, jejaring kerja, sosial budaya, dan profesionalisme.", icon: "♡", tone: "peach", topics: ["Pelayanan", "Profesional", "Adaptasi"] },
 ];
 
 export default function Home() {
   return (
-    <main className="overflow-hidden">
-      <header className="relative z-10 border-b border-blue-100/80 bg-white/90 backdrop-blur">
-        <div className="container flex h-[76px] items-center justify-between">
-          <Link href="/" className="flex items-center gap-3" aria-label="SuksesCPNS beranda">
-            <span className="grid h-10 w-10 place-items-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-600/20"><GraduationCap size={23} /></span>
-            <span className="text-lg font-extrabold tracking-tight text-slate-900">Sukses<span className="text-blue-600">CPNS</span></span>
+    <main className="celadon-home" id="home">
+      <header className="celadon-header">
+        <div className="celadon-container celadon-nav">
+          <Link href="/" className="celadon-brand" aria-label="Sukses CPNS beranda">
+            <span className="celadon-brand-mark"><GraduationCap size={22} /></span>
+            <span>Sukses<span>CPNS</span></span>
           </Link>
-          <nav className="hidden items-center gap-8 text-sm font-semibold text-slate-600 md:flex">
-            <a href="#program" className="transition hover:text-blue-600">Program</a>
-            <Link href="/materi" className="transition hover:text-blue-600">Materi</Link>
-            <Link href="/latihan" className="transition hover:text-blue-600">Latihan</Link>
-            <Link href="/simulasi" className="transition hover:text-blue-600">Simulasi CAT</Link>
-            <Link href="/paket" className="transition hover:text-blue-600">Paket</Link>
-            <Link href="/peringkat" className="transition hover:text-blue-600">Peringkat</Link>
-            <a href="#fitur" className="transition hover:text-blue-600">Fitur</a>
-            <a href="#tentang" className="transition hover:text-blue-600">Tentang</a>
+          <nav className="celadon-links" aria-label="Navigasi utama">
+            <a href="#fitur">Fitur</a>
+            <a href="#materi">Materi SKD</a>
+            <Link href="/latihan">Latihan</Link>
+            <Link href="/simulasi">Tryout CAT</Link>
+            <Link href="/peringkat">Peringkat</Link>
           </nav>
-          <div className="flex items-center gap-3">
+          <div className="celadon-actions">
             <HomeAuthActions />
-            <Link href="/latihan" className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-600/20 transition hover:-translate-y-0.5 hover:bg-blue-700">Mulai belajar <ArrowRight size={16} /></Link>
+            <Link href="/latihan" className="celadon-button celadon-button-primary">Mulai belajar <ArrowUpRight size={16} /></Link>
           </div>
+          <details className="celadon-mobile-menu">
+            <summary aria-label="Buka menu"><span></span><span></span><span></span></summary>
+            <div className="celadon-mobile-panel">
+              <a href="#fitur">Fitur</a><a href="#materi">Materi SKD</a>
+              <Link href="/latihan">Latihan</Link><Link href="/simulasi">Tryout CAT</Link>
+              <Link href="/peringkat">Peringkat</Link><Link href="/masuk">Masuk / Daftar</Link>
+            </div>
+          </details>
         </div>
       </header>
 
-      <section className="hero-glow grid-pattern relative">
-        <div className="container grid min-h-[620px] items-center gap-12 py-16 lg:grid-cols-[1.05fr_.95fr] lg:py-24">
-          <div className="relative z-10">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-100 bg-white/80 px-3.5 py-2 text-xs font-bold text-blue-700 shadow-sm"><Sparkles size={14} /> Teman belajar persiapan seleksi ASN</div>
-            <h1 className="max-w-2xl text-4xl font-black leading-[1.12] tracking-tight text-slate-950 sm:text-5xl lg:text-[60px]">Persiapan ASN lebih <span className="text-blue-600">terarah</span>, mulai dari sini.</h1>
-            <p className="mt-6 max-w-xl text-base leading-8 text-slate-600 sm:text-lg">Belajar materi, berlatih soal, dan evaluasi kemampuan dalam satu platform untuk membantu persiapan CPNS dan PPPK.</p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="#program" className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-bold text-white shadow-xl shadow-blue-600/20 transition hover:-translate-y-0.5 hover:bg-blue-700">Lihat program belajar <ArrowRight size={17} /></Link>
-              <Link href="#fitur" className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-bold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50">Kenali fitur</Link>
+      <section className="celadon-hero">
+        <div className="celadon-container celadon-hero-grid">
+          <div className="celadon-hero-copy">
+            <span className="celadon-eyebrow"><Sparkles size={14} /> Ruang persiapan seleksi ASN</span>
+            <h1>Langkah kecil hari ini, <em>ASN impian</em> esok hari.</h1>
+            <p>Persiapkan dirimu menghadapi seleksi CPNS dengan materi terstruktur, latihan soal, simulasi CAT, dan evaluasi kemampuan dalam satu platform.</p>
+            <div className="celadon-hero-buttons">
+              <Link href="/masuk" className="celadon-button celadon-button-primary">Mulai perjalananmu <ArrowRight size={17} /></Link>
+              <a href="#fitur" className="celadon-button celadon-button-quiet">Jelajahi fitur</a>
             </div>
-            <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-slate-500">
-              <span className="inline-flex items-center gap-2"><CheckCircle2 size={17} className="text-emerald-500" /> Belajar fleksibel</span>
-              <span className="inline-flex items-center gap-2"><CheckCircle2 size={17} className="text-emerald-500" /> Tampilan ramah mobile</span>
+            <div className="celadon-proof">
+              <span><CheckCircle2 size={16} /> Belajar fleksibel</span>
+              <span><CheckCircle2 size={16} /> Ramah mobile</span>
+              <span><CheckCircle2 size={16} /> Progres terukur</span>
             </div>
           </div>
-          <div className="relative mx-auto w-full max-w-[510px]">
-            <div className="absolute -inset-5 rounded-[2.5rem] bg-gradient-to-br from-blue-200/70 via-white to-cyan-100/70 blur-2xl" />
-            <div className="relative rounded-[2rem] border border-white bg-white p-5 shadow-[0_30px_90px_rgba(30,64,175,.16)] sm:p-7">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-5">
-                <div><p className="text-xs font-bold uppercase tracking-[.16em] text-blue-600">Dashboard belajar</p><h2 className="mt-1 text-xl font-extrabold text-slate-900">Siap tingkatkan kemampuan?</h2></div>
-                <span className="grid h-11 w-11 place-items-center rounded-2xl bg-blue-50 text-blue-600"><BrainCircuit size={23} /></span>
-              </div>
-              <div className="mt-5 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-800 p-5 text-white">
-                <div className="flex items-center justify-between"><span className="text-sm font-semibold text-blue-100">Target latihan</span><Zap size={18} className="text-yellow-300" /></div>
-                <p className="mt-3 text-3xl font-black">Konsisten setiap hari</p><p className="mt-2 text-sm leading-6 text-blue-100">Satu langkah kecil hari ini membawa kamu lebih dekat pada target.</p>
-                <div className="mt-5 h-2 overflow-hidden rounded-full bg-white/20"><div className="h-full w-2/3 rounded-full bg-cyan-300" /></div>
-                <div className="mt-2 flex justify-between text-xs text-blue-100"><span>Contoh progres belajar</span><span>2 dari 3 sesi</span></div>
-              </div>
-              <div className="mt-5 grid grid-cols-2 gap-3">
-                <div className="rounded-2xl border border-slate-100 p-4"><span className="grid h-9 w-9 place-items-center rounded-xl bg-violet-50 text-violet-600"><BookOpen size={18} /></span><p className="mt-3 text-2xl font-black text-slate-900">Materi</p><p className="mt-1 text-xs text-slate-500">Ringkasan pembelajaran</p></div>
-                <div className="rounded-2xl border border-slate-100 p-4"><span className="grid h-9 w-9 place-items-center rounded-xl bg-cyan-50 text-cyan-600"><Target size={18} /></span><p className="mt-3 text-2xl font-black text-slate-900">Latihan</p><p className="mt-1 text-xs text-slate-500">Asah kemampuanmu</p></div>
-              </div>
-              <div className="mt-4 flex items-center gap-3 rounded-2xl bg-slate-50 p-4"><span className="grid h-10 w-10 place-items-center rounded-full bg-emerald-100 text-emerald-700"><Trophy size={19} /></span><div><p className="text-sm font-bold text-slate-800">Evaluasi dan berkembang</p><p className="mt-0.5 text-xs text-slate-500">Kenali kekuatan dan materi yang perlu diulang</p></div></div>
+
+          <div className="celadon-visual" aria-label="Ilustrasi dashboard belajar Sukses CPNS">
+            <div className="celadon-float celadon-float-top"><span className="celadon-float-icon">✦</span><span><b>Target belajar</b><small>Konsisten setiap hari</small></span></div>
+            <div className="celadon-board">
+              <div className="celadon-board-head"><span>RUANG BELAJARMU</span><span className="celadon-live"><i></i> Siap dimulai</span></div>
+              <h2>Siap hadapi SKD?</h2>
+              <p>Atur ritme, tingkatkan kemampuan.</p>
+              {subjects.map((subject, index) => (
+                <div className="celadon-subject-row" key={subject.code}>
+                  <span className={"celadon-subject-icon " + subject.tone}>{subject.icon}</span>
+                  <span><b>{subject.code}</b><small>{subject.title}</small></span>
+                  <strong>0{index + 1}</strong>
+                </div>
+              ))}
+              <div className="celadon-board-foot"><span>Mulai dari satu soal</span><span className="celadon-arrow-circle"><ArrowUpRight size={18} /></span></div>
             </div>
-            <div className="absolute -right-3 top-16 hidden rounded-2xl border border-blue-100 bg-white px-4 py-3 shadow-soft sm:block"><div className="flex items-center gap-2 text-sm font-bold text-slate-800"><Users size={17} className="text-blue-600" /> Belajar bersama</div><p className="mt-1 text-xs text-slate-500">Bangun rutinitas persiapan</p></div>
+            <div className="celadon-float celadon-float-bottom"><span className="celadon-check">✓</span><span><b>Progres terukur</b><small>Kenali perkembanganmu</small></span></div>
           </div>
         </div>
       </section>
 
-      <section id="program" className="container py-20 sm:py-24">
-        <div className="mx-auto max-w-2xl text-center"><p className="text-xs font-extrabold uppercase tracking-[.2em] text-blue-600">Program belajar</p><h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">Pilih jalur persiapanmu</h2><p className="mt-4 leading-7 text-slate-600">Mulai dari kebutuhan seleksi yang sedang kamu persiapkan. Materi dan fitur akan terus dikembangkan.</p></div>
-        <div className="mt-12 grid gap-5 md:grid-cols-3">
-          {programs.map((program) => { const Icon = program.icon; return <article key={program.tag} className="group rounded-3xl border border-slate-200 bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-soft"><div className="flex items-center justify-between"><span className="rounded-full bg-blue-50 px-3 py-1.5 text-[11px] font-extrabold tracking-wider text-blue-700">{program.tag}</span><span className="grid h-12 w-12 place-items-center rounded-2xl bg-blue-50 text-blue-600 transition group-hover:bg-blue-600 group-hover:text-white"><Icon size={24} /></span></div><h3 className="mt-6 text-xl font-extrabold text-slate-900">{program.title}</h3><p className="mt-3 min-h-[72px] text-sm leading-6 text-slate-600">{program.description}</p><ul className="mt-5 space-y-3">{program.items.map(item => <li key={item} className="flex items-center gap-2 text-sm text-slate-600"><CheckCircle2 size={16} className="shrink-0 text-emerald-500" />{item}</li>)}</ul><Link href={program.tag === "LATIHAN" ? "/simulasi" : "/materi"} className="mt-7 inline-flex items-center gap-2 text-sm font-extrabold text-blue-700">{program.tag === "LATIHAN" ? "Mulai simulasi" : "Pelajari materi"} <ArrowRight size={16} className="transition group-hover:translate-x-1" /></Link></article>; })}
+      <section className="celadon-trust">
+        <div className="celadon-container">
+          <p>Satu platform untuk seluruh perjalanan persiapanmu</p>
+          <div><span>Belajar</span><i></i><span>Berlatih</span><i></i><span>Simulasi</span><i></i><span>Evaluasi</span><i></i><span>Berkembang</span></div>
         </div>
       </section>
 
-      <section id="fitur" className="bg-slate-50 py-20 sm:py-24">
-        <div className="container grid gap-12 lg:grid-cols-[.85fr_1.15fr] lg:items-center">
-          <div><p className="text-xs font-extrabold uppercase tracking-[.2em] text-blue-600">Kenapa SuksesCPNS</p><h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">Belajar dengan strategi, bukan sekadar menghafal.</h2><p className="mt-5 leading-7 text-slate-600">Persiapan seleksi membutuhkan latihan yang konsisten. Gunakan platform ini untuk membangun rutinitas belajar dan mengevaluasi kemajuanmu.</p><Link href="#tentang" className="mt-7 inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-blue-700">Tentang platform <ArrowRight size={16} /></Link></div>
-          <div className="grid gap-4 sm:grid-cols-2">{features.map(({icon: Icon,title,text}) => <div key={title} className="rounded-2xl border border-slate-200 bg-white p-6"><span className="grid h-11 w-11 place-items-center rounded-xl bg-blue-50 text-blue-600"><Icon size={21} /></span><h3 className="mt-4 font-extrabold text-slate-900">{title}</h3><p className="mt-2 text-sm leading-6 text-slate-600">{text}</p></div>)}</div>
+      <section className="celadon-section" id="fitur">
+        <div className="celadon-container">
+          <div className="celadon-section-heading">
+            <span className="celadon-kicker">FITUR UTAMA</span>
+            <h2>Semua yang kamu butuhkan untuk persiapan SKD.</h2>
+            <p>Belajar lebih fokus dengan fitur yang menemani setiap tahap persiapan.</p>
+          </div>
+          <div className="celadon-feature-grid">
+            {features.map(({ icon: Icon, title, text }) => (
+              <article className="celadon-feature-card" key={title}>
+                <span className="celadon-feature-icon"><Icon size={22} /></span>
+                <h3>{title}</h3><p>{text}</p>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
 
-      <section id="tentang" className="container py-20 sm:py-24">
-        <div className="rounded-[2rem] bg-gradient-to-br from-blue-700 to-blue-950 px-7 py-12 text-center text-white sm:px-14 sm:py-16"><span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-white/15"><Sparkles size={26} /></span><h2 className="mx-auto mt-6 max-w-2xl text-3xl font-black tracking-tight sm:text-4xl">Mulai persiapanmu hari ini.</h2><p className="mx-auto mt-4 max-w-xl leading-7 text-blue-100">Bangun kebiasaan belajar yang konsisten. Siapkan diri dengan lebih percaya diri, satu sesi latihan dalam satu waktu.</p><Link href="/latihan" className="mt-8 inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3.5 text-sm font-extrabold text-blue-700 transition hover:-translate-y-0.5 hover:bg-blue-50">Mulai latihan <ArrowRight size={17} /></Link></div>
+      <section className="celadon-section celadon-material-section" id="materi">
+        <div className="celadon-container">
+          <div className="celadon-split-heading">
+            <div><span className="celadon-kicker">RUANG BELAJAR</span><h2>Kenali tiga bagian utama SKD.</h2></div>
+            <p>Mulai dari materi yang paling ingin kamu kuasai. Belajar bertahap, lalu ukur kemampuan lewat latihan.</p>
+          </div>
+          <div className="celadon-material-grid">
+            {subjects.map((subject) => (
+              <article className="celadon-material-card" key={subject.code}>
+                <div className="celadon-material-top"><span className={"celadon-code " + subject.tone}>{subject.code}</span><span className="celadon-material-symbol"><Layers3 size={20} /></span></div>
+                <h3>{subject.title}</h3><p>{subject.text}</p>
+                <div className="celadon-topic-list">{subject.topics.map(topic => <span key={topic}>{topic}</span>)}</div>
+                <Link href="/materi" className="celadon-text-link">Jelajahi materi <ArrowUpRight size={15} /></Link>
+              </article>
+            ))}
+          </div>
+        </div>
       </section>
 
-      <footer className="border-t border-slate-200 bg-white">
-        <div className="container flex flex-col gap-5 py-8 sm:flex-row sm:items-center sm:justify-between"><Link href="/" className="flex items-center gap-2 font-extrabold text-slate-900"><span className="grid h-8 w-8 place-items-center rounded-lg bg-blue-600 text-white"><GraduationCap size={18} /></span>Sukses<span className="text-blue-600">CPNS</span></Link><p className="max-w-2xl text-xs leading-5 text-slate-500">SuksesCPNS adalah platform belajar independen dan bukan situs resmi pemerintah, BKN, atau instansi penyelenggara seleksi ASN. Informasi seleksi tetap merujuk pada pengumuman resmi instansi terkait.</p><div className="flex flex-wrap gap-4 text-xs text-slate-500"><Link href="/kebijakan-privasi" className="hover:text-blue-700">Kebijakan Privasi</Link><Link href="/syarat-ketentuan" className="hover:text-blue-700">Syarat & Ketentuan</Link><Link href="/admin" className="hover:text-blue-700">Admin</Link></div><p className="text-xs text-slate-400">© {new Date().getFullYear()} SuksesCPNS</p></div>
-      </footer>
+      <section className="celadon-section">
+        <div className="celadon-container celadon-tryout">
+          <div>
+            <span className="celadon-kicker">SIMULASI CAT</span>
+            <h2>Biasakan diri dengan suasana ujian.</h2>
+            <p>Coba simulasi dengan soal yang tersedia di platform. Hasil pengerjaan akan tersimpan pada akunmu.</p>
+            <ul><li><CheckCircle2 size={17} /> Latihan berdasarkan kategori</li><li><CheckCircle2 size={17} /> Timer dan navigasi soal</li><li><CheckCircle2 size={17} /> Penilaian dari server</li></ul>
+            <Link href="/simulasi" className="celadon-button celadon-button-primary">Lihat simulasi CAT <ArrowRight size={17} /></Link>
+          </div>
+          <div className="celadon-tryout-card">
+            <div className="celadon-tryout-top"><span>PREVIEW SIMULASI</span><span className="celadon-tag">CAT SKD</span></div>
+            <div className="celadon-tryout-question"><span>01 / 03</span><h3>Manakah tindakan yang menunjukkan semangat persatuan?</h3><div className="celadon-answer"><b>A</b> Mengutamakan kelompok sendiri</div><div className="celadon-answer celadon-answer-active"><b>B</b> Menghargai perbedaan dan bekerja sama <CheckCircle2 size={17} /></div><div className="celadon-answer"><b>C</b> Menghindari diskusi</div></div>
+            <div className="celadon-tryout-foot"><span><Clock3 size={15} /> Waktu latihan</span><b>Terukur dan terarah</b></div>
+          </div>
+        </div>
+      </section>
+
+      <section className="celadon-section celadon-dashboard-section">
+        <div className="celadon-container">
+          <div className="celadon-section-heading"><span className="celadon-kicker">DASHBOARD SISWA</span><h2>Progres belajar dalam satu pandangan.</h2><p>Masuk ke akunmu untuk melihat riwayat, hasil latihan, dan perkembangan belajar.</p></div>
+          <div className="celadon-dashboard-preview">
+            <div className="celadon-dashboard-sidebar"><div className="celadon-brand small"><span className="celadon-brand-mark"><GraduationCap size={17}/></span><b>SuksesCPNS</b></div><span>MENU BELAJAR</span><b className="active">▦ &nbsp; Ringkasan</b><span>▤ &nbsp; Materi</span><span>✎ &nbsp; Latihan soal</span><span>◷ &nbsp; Tryout</span><span>AKUN</span><span>♙ &nbsp; Profil saya</span></div>
+            <div className="celadon-dashboard-main">
+              <div className="celadon-dashboard-welcome"><div><small>RUANG BELAJAR PRIBADI</small><h3>Hai, Pejuang CPNS! ✦</h3><p>Semua perkembangan belajarmu tersimpan dalam akun.</p></div><span className="celadon-avatar">S</span></div>
+              <div className="celadon-dashboard-stats"><div><small>Materi tersedia</small><b>TWK · TIU · TKP</b></div><div><small>Riwayat latihan</small><b>Tersimpan</b></div><div><small>Evaluasi</small><b>Terukur</b></div></div>
+              <div className="celadon-dashboard-lower"><div><b>Fokus belajar</b><p>TWK <span>Wawasan kebangsaan</span></p><p>TIU <span>Penalaran umum</span></p><p>TKP <span>Karakteristik pribadi</span></p></div><div className="celadon-goal"><span>✦</span><b>Target kesiapan</b><p>Bangun konsistensi melalui latihan rutin.</p></div></div>
+            </div>
+          </div>
+          <div className="celadon-dashboard-cta"><Link href="/akun" className="celadon-button celadon-button-primary">Buka dashboard siswa <ArrowRight size={16}/></Link></div>
+        </div>
+      </section>
+
+      <section className="celadon-section">
+        <div className="celadon-container celadon-final-cta">
+          <span className="celadon-kicker">MULAI PERJALANANMU</span>
+          <h2>Persiapan hebat dimulai dari langkah pertama.</h2>
+          <p>Buat akun dan siapkan rutinitas belajar yang lebih terarah bersama Sukses CPNS.</p>
+          <div><Link href="/masuk" className="celadon-button celadon-button-primary">Masuk / Daftar <ArrowRight size={17}/></Link><Link href="/materi" className="celadon-button celadon-button-quiet">Lihat materi</Link></div>
+        </div>
+      </section>
+
+      <footer className="celadon-footer"><div className="celadon-container celadon-footer-inner">
+        <Link href="/" className="celadon-brand"><span className="celadon-brand-mark"><GraduationCap size={21}/></span><span>Sukses<span>CPNS</span></span></Link>
+        <p>Platform belajar independen untuk persiapan seleksi CPNS dan PPPK. Bukan situs resmi pemerintah atau BKN.</p>
+        <div><Link href="/kebijakan-privasi">Kebijakan privasi</Link><Link href="/syarat-ketentuan">Syarat & ketentuan</Link><Link href="/paket">Paket belajar</Link></div>
+        <small>© {new Date().getFullYear()} Sukses CPNS</small>
+      </div></footer>
     </main>
   );
 }
