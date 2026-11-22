@@ -1,12 +1,11 @@
 name: Admin Flutter APK
 
+concurrency:
+  group: admin-flutter-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   pull_request:
-    paths:
-      - "apps/admin_mobile/**"
-      - ".github/workflows/admin-flutter.yml"
-  push:
-    branches: [main, feat/admin-mobile-flutter]
     paths:
       - "apps/admin_mobile/**"
       - ".github/workflows/admin-flutter.yml"
