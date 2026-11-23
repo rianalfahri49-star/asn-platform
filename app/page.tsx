@@ -4,7 +4,7 @@ import Link from "next/link";
 import HomeAuthActions from "./home-auth-actions";
 import {
   ArrowRight, ArrowUpRight, BookOpen, Brain, CheckCircle2, Clock3,
-  GraduationCap, Layers3, ShieldCheck, Sparkles, Target, Trophy, Zap,
+  GraduationCap, Layers3, ShieldCheck, Sparkles, Target, Trophy,
 } from "lucide-react";
 
 const features = [
