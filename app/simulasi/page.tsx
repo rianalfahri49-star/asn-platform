@@ -182,7 +182,7 @@ export default function SimulasiPage() {
               </div>
             </div>
             <p className="mt-5 text-sm text-slate-500">
-              Catatan: bank soal yang tersedia menjadi jumlah soal sesi ini. Skor dihitung server berdasarkan kunci jawaban database, bukan nilai yang dikirim browser. Aturan bobot TKP resmi belum tersedia pada struktur data saat ini.
+              Catatan: tersedia 110 soal latihan (30 TWK, 35 TIU, 45 TKP). TWK/TIU menggunakan 5 poin untuk jawaban tepat; TKP menggunakan bobot latihan 1–5. Skema ini adalah penilaian latihan internal, bukan perhitungan atau passing grade resmi BKN.
             </p>
             {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
             <button
@@ -293,16 +293,17 @@ export default function SimulasiPage() {
             <h2 className="mt-4 text-2xl font-black">Simulasi selesai</h2>
             <div className="mx-auto mt-6 grid max-w-lg grid-cols-2 gap-3">
               <div className="rounded-2xl bg-blue-50 p-5">
-                <p className="text-sm text-blue-700">Skor latihan</p>
+                <p className="text-sm text-blue-700">Skor latihan · maks. 550</p>
                 <p className="mt-1 text-3xl font-black">{result.score}</p>
               </div>
               <div className="rounded-2xl bg-emerald-50 p-5">
-                <p className="text-sm text-emerald-700">Jawaban benar</p>
+                <p className="text-sm text-emerald-700">Pilihan terbaik</p>
                 <p className="mt-1 text-3xl font-black">{result.correct_answers}/{result.total_questions}</p>
               </div>
             </div>
             <p className="mt-4 text-sm text-slate-500">Waktu digunakan {clock(Math.min(MAX_LIMIT, questions.length * SECONDS_PER_QUESTION) - remaining)}. Skor dihitung dan disimpan di server.</p>
             <p className="mt-3 text-sm font-bold text-emerald-700">Hasil tersimpan di riwayat akun.</p>
+            <p className="mt-2 text-xs leading-5 text-slate-500">Skor merupakan evaluasi latihan internal. Bobot TKP 1–5 dan nilai TWK/TIU bukan klaim skor resmi atau passing grade seleksi ASN.</p>
             <div className="mt-8 text-left">
               <h3 className="text-xl font-black text-slate-900">Pembahasan jawaban</h3>
               <p className="mt-1 text-sm text-slate-500">Pelajari alasan jawaban benar untuk setiap soal.</p>
@@ -332,6 +333,7 @@ export default function SimulasiPage() {
                         })}
                       </div>
                       <p className="mt-3 rounded-xl bg-slate-50 p-4 text-sm leading-6 text-slate-700"><b>Pembahasan:</b> {item.explanation || "Belum ada penjelasan untuk soal ini."}</p>
+                      {item.category === "TKP" && <p className="mt-2 text-xs font-bold text-blue-700">Poin respons latihan: {item.selected_score}/5</p>}
                     </article>
                   ))}
                 </div>
