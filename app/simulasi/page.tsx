@@ -53,6 +53,7 @@ export default function SimulasiPage() {
   const [started, setStarted] = useState(false);
   const [done, setDone] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [error, setError] = useState("");
@@ -84,6 +85,21 @@ export default function SimulasiPage() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  useEffect(() => {
+    if (!db) return;
+    let active = true;
+    void db.auth.getUser().then(({ data }) => {
+      if (active) setIsAuthenticated(Boolean(data.user));
+    });
+    const { data: { subscription } } = db.auth.onAuthStateChange((_event, session) => {
+      setIsAuthenticated(Boolean(session?.user));
+    });
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
+  }, [db]);
 
   const answeredCount = questions.filter((item) => Boolean(answers[item.id])).length;
   const markedCount = marked.length;
@@ -185,8 +201,9 @@ export default function SimulasiPage() {
               Catatan: tersedia 110 soal latihan (30 TWK, 35 TIU, 45 TKP). TWK/TIU menggunakan 5 poin untuk jawaban tepat; TKP menggunakan bobot latihan 1–5. Skema ini adalah penilaian latihan internal, bukan perhitungan atau passing grade resmi BKN.
             </p>
             {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
+            {!isAuthenticated && <p className="mt-4 text-sm text-amber-700">Masuk terlebih dahulu untuk memulai dan menyimpan hasil simulasi. <Link href="/masuk?next=/simulasi" className="font-bold underline">Masuk / daftar</Link></p>}
             <button
-              disabled={!questions.length || loading}
+              disabled={!questions.length || loading || !isAuthenticated}
               onClick={() => setStarted(true)}
               className="mt-6 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 font-bold text-white disabled:opacity-40"
             >
