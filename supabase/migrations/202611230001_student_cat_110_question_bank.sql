@@ -8,6 +8,9 @@ ALTER TABLE public.questions
   ADD CONSTRAINT questions_option_scores_object_check
   CHECK (jsonb_typeof(option_scores) = 'object');
 
+-- Do not expose the TKP score map: its highest value reveals the best option.
+REVOKE SELECT (option_scores) ON TABLE public.questions FROM anon, authenticated;
+
 -- Existing TKP questions: best response gets 5, remaining options get 4..1.
 UPDATE public.questions q
 SET option_scores = (
