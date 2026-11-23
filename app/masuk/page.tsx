@@ -34,8 +34,11 @@ export default function MasukPage() {
       const {data,error}=await supabase.auth.signUp({email,password,options:{data:{full_name:name}}});
       setBusy(false);
       if(error){setMessage(error.message);return;}
-      if(data.session){router.push("/akun");router.refresh();}
-      else setMessage("Pendaftaran berhasil. Periksa email untuk konfirmasi sebelum masuk.");
+      if(data.session){
+        const requested=new URLSearchParams(window.location.search).get("next")||"/akun";
+        const destination=requested.startsWith("/")&&!requested.startsWith("//")?requested:"/akun";
+        router.push(destination);router.refresh();
+      } else setMessage("Pendaftaran berhasil. Periksa email untuk konfirmasi sebelum masuk.");
     }
   }
   return <main className="grid min-h-screen place-items-center bg-slate-50 px-4 py-10">
