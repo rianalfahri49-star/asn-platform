@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
 import { ArrowLeft, ArrowRight, CheckCircle2, Clock3, LoaderCircle, RotateCcw } from "lucide-react";
-import { submitExamAction, type RawExamAnswer } from "../simulasi/actions";
+import { getExamReviewAction, submitExamAction, type ExamReviewItem, type RawExamAnswer } from "../simulasi/actions";
 
 type Question = { id: string; category: "TWK" | "TIU" | "TKP"; topic: string; question: string; options: string[] };
 type Result = { attempt_id: string; total_questions: number; correct_answers: number; score: number };
@@ -42,6 +42,7 @@ export default function LatihanPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState<Result | null>(null);
+  const [review, setReview] = useState<ExamReviewItem[]>([]);
 
   const load = useCallback(async () => {
     if (!supabase) {
@@ -55,7 +56,7 @@ export default function LatihanPage() {
       .select("id,category,topic,question,options")
       .eq("is_published", true)
       .eq("is_premium", false)
-      .limit(50);
+      .limit(110);
     if (category !== "SEMUA") query = query.eq("category", category);
     const { data, error: loadError } = await query;
     if (loadError) setError(loadError.message);
@@ -93,6 +94,9 @@ export default function LatihanPage() {
       return;
     }
     setResult(response.result);
+    const reviewResponse = await getExamReviewAction(response.result.attempt_id);
+    if (reviewResponse.success) setReview(reviewResponse.items);
+    else setError(reviewResponse.error);
     setFinished(true);
     setStarted(false);
     setSubmitting(false);
@@ -107,6 +111,7 @@ export default function LatihanPage() {
     setSubmitting(false);
     setError("");
     setResult(null);
+    setReview([]);
     void load();
   }
 
@@ -143,7 +148,7 @@ export default function LatihanPage() {
             </div>
             <div className="mt-5 rounded-2xl bg-blue-50 p-4 text-sm text-blue-900">
               {questions.length ? questions.length + " soal tersedia untuk sesi ini." : "Belum ada soal terbit pada kategori ini."}
-              <span className="mt-1 block text-blue-700">Skor dihitung di server berdasarkan kunci jawaban database. Aturan bobot TKP resmi belum tersedia pada struktur data saat ini.</span>
+              <span className="mt-1 block text-blue-700">TWK/TIU bernilai 5 untuk jawaban tepat; TKP memakai bobot latihan 1–5. Ini skema evaluasi internal, bukan perhitungan atau passing grade resmi BKN.</span>
             </div>
             {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
             <button disabled={!questions.length || loading} onClick={() => setStarted(true)} className="mt-5 rounded-xl bg-blue-600 px-5 py-3 font-bold text-white disabled:cursor-not-allowed disabled:opacity-40">
@@ -200,10 +205,12 @@ export default function LatihanPage() {
             <p className="mt-2 text-slate-500">Hasil sesi latihanmu dihitung oleh server</p>
             <div className="mx-auto mt-6 grid max-w-lg grid-cols-2 gap-3">
               <div className="rounded-2xl bg-blue-50 p-5"><p className="text-sm text-blue-700">Skor latihan</p><p className="mt-1 text-3xl font-black text-blue-900">{result.score}</p></div>
-              <div className="rounded-2xl bg-emerald-50 p-5"><p className="text-sm text-emerald-700">Jawaban benar</p><p className="mt-1 text-3xl font-black text-emerald-900">{result.correct_answers}/{result.total_questions}</p></div>
+              <div className="rounded-2xl bg-emerald-50 p-5"><p className="text-sm text-emerald-700">Pilihan terbaik</p><p className="mt-1 text-3xl font-black text-emerald-900">{result.correct_answers}/{result.total_questions}</p></div>
             </div>
             <p className="mt-4 text-sm text-slate-500">Waktu: {formatTime(seconds)} · {answered} soal dijawab</p>
             <p className="mt-3 text-sm font-semibold text-emerald-700">Hasil tersimpan di akunmu.</p>
+            <p className="mt-2 text-xs leading-5 text-slate-500">Skor latihan internal: TWK/TIU 5 atau 0 poin, TKP 1–5 poin. Nilai ini bukan skor resmi atau passing grade seleksi ASN.</p>
+            {review.length > 0 && <div className="mt-8 space-y-4 text-left"><h3 className="text-xl font-black">Pembahasan jawaban</h3>{review.map((item,index)=><article key={item.question_id} className="rounded-2xl border p-5"><div className="flex justify-between gap-3 text-xs font-bold text-blue-700"><span>{item.category} · {item.topic}</span><span>Soal {index+1}</span></div><h4 className="mt-3 font-bold leading-7">{item.question}</h4><div className="mt-3 space-y-2">{item.options.map((option,i)=>{const letter=LETTERS[i];const correct=letter===item.correct_answer;const selected=letter===item.selected_answer;return <div key={letter} className={"rounded-xl border px-3 py-2 text-sm "+(correct?"border-emerald-300 bg-emerald-50 text-emerald-900":selected?"border-rose-300 bg-rose-50 text-rose-900":"border-slate-100 text-slate-600")}><b className="mr-2">{letter}.</b>{option}{correct&&<b className="ml-2">· Jawaban terbaik</b>}{!correct&&selected&&<b className="ml-2">· Jawabanmu</b>}</div>;})}</div><p className="mt-3 rounded-xl bg-slate-50 p-4 text-sm leading-6 text-slate-700"><b>Pembahasan:</b> {item.explanation||"Belum ada pembahasan."}</p>{item.category==="TKP"&&<p className="mt-2 text-xs font-bold text-blue-700">Poin respons latihan: {item.selected_score}/5</p>}</article>)}</div>}
             <div className="mt-6 flex flex-wrap justify-center gap-3">
               <button onClick={restart} className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 font-bold text-white"><RotateCcw size={16} /> Latihan lagi</button>
               <Link href="/akun" className="rounded-xl border px-5 py-3 font-bold text-slate-700">Lihat progres</Link>
