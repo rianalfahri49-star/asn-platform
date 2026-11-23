@@ -303,6 +303,40 @@ export default function SimulasiPage() {
             </div>
             <p className="mt-4 text-sm text-slate-500">Waktu digunakan {clock(Math.min(MAX_LIMIT, questions.length * SECONDS_PER_QUESTION) - remaining)}. Skor dihitung dan disimpan di server.</p>
             <p className="mt-3 text-sm font-bold text-emerald-700">Hasil tersimpan di riwayat akun.</p>
+            <div className="mt-8 text-left">
+              <h3 className="text-xl font-black text-slate-900">Pembahasan jawaban</h3>
+              <p className="mt-1 text-sm text-slate-500">Pelajari alasan jawaban benar untuk setiap soal.</p>
+              {review.length === 0 ? (
+                <p className="mt-4 rounded-xl bg-amber-50 p-4 text-sm text-amber-800">Pembahasan belum tersedia untuk sesi ini.</p>
+              ) : (
+                <div className="mt-4 space-y-4">
+                  {review.map((item, index) => (
+                    <article key={item.question_id} className="rounded-2xl border border-slate-200 p-5">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <span className="text-xs font-extrabold uppercase tracking-wide text-blue-700">{item.category} · {item.topic}</span>
+                        <span className="text-xs font-bold text-slate-400">Soal {index + 1}</span>
+                      </div>
+                      <h4 className="mt-3 font-bold leading-7 text-slate-900">{item.question}</h4>
+                      <div className="mt-3 space-y-2">
+                        {item.options.map((option, optionIndex) => {
+                          const letter = LETTERS[optionIndex];
+                          const isCorrect = letter === item.correct_answer;
+                          const isSelected = letter === item.selected_answer;
+                          return (
+                            <div key={letter} className={"rounded-xl border px-3 py-2 text-sm " + (isCorrect ? "border-emerald-300 bg-emerald-50 text-emerald-900" : isSelected ? "border-rose-300 bg-rose-50 text-rose-900" : "border-slate-100 text-slate-600")}>
+                              <span className="mr-2 font-black">{letter}.</span>{option}
+                              {isCorrect && <span className="ml-2 font-bold">· Jawaban benar</span>}
+                              {!isCorrect && isSelected && <span className="ml-2 font-bold">· Jawabanmu</span>}
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <p className="mt-3 rounded-xl bg-slate-50 p-4 text-sm leading-6 text-slate-700"><b>Pembahasan:</b> {item.explanation || "Belum ada penjelasan untuk soal ini."}</p>
+                    </article>
+                  ))}
+                </div>
+              )}
+            </div>
             <button onClick={reset} className="mt-6 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 font-bold text-white">
               <RotateCcw size={16} />Ulangi simulasi
             </button>
