@@ -39,6 +39,7 @@ export default function LatihanPage() {
   const [finished, setFinished] = useState(false);
   const [category, setCategory] = useState("SEMUA");
   const [loading, setLoading] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState<Result | null>(null);
@@ -67,6 +68,21 @@ export default function LatihanPage() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  useEffect(() => {
+    if (!db) return;
+    let active = true;
+    void db.auth.getUser().then(({ data }) => {
+      if (active) setIsAuthenticated(Boolean(data.user));
+    });
+    const { data: { subscription } } = db.auth.onAuthStateChange((_event, session) => {
+      setIsAuthenticated(Boolean(session?.user));
+    });
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
+  }, [db]);
 
   useEffect(() => {
     if (!started || finished) return;
@@ -151,7 +167,8 @@ export default function LatihanPage() {
               <span className="mt-1 block text-blue-700">TWK/TIU bernilai 5 untuk jawaban tepat; TKP memakai bobot latihan 1–5. Ini skema evaluasi internal, bukan perhitungan atau passing grade resmi BKN.</span>
             </div>
             {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
-            <button disabled={!questions.length || loading} onClick={() => setStarted(true)} className="mt-5 rounded-xl bg-blue-600 px-5 py-3 font-bold text-white disabled:cursor-not-allowed disabled:opacity-40">
+            {!isAuthenticated && <p className="mt-4 text-sm text-amber-700">Masuk terlebih dahulu untuk memulai dan menyimpan hasil latihan. <Link href="/masuk?next=/latihan" className="font-bold underline">Masuk / daftar</Link></p>}
+            <button disabled={!questions.length || loading || !isAuthenticated} onClick={() => setStarted(true)} className="mt-5 rounded-xl bg-blue-600 px-5 py-3 font-bold text-white disabled:cursor-not-allowed disabled:opacity-40">
               Mulai latihan
             </button>
           </section>
