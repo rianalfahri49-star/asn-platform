@@ -70,12 +70,12 @@ export default function LatihanPage() {
   }, [load]);
 
   useEffect(() => {
-    if (!db) return;
+    if (!supabase) return;
     let active = true;
-    void db.auth.getUser().then(({ data }) => {
+    void supabase.auth.getUser().then(({ data }) => {
       if (active) setIsAuthenticated(Boolean(data.user));
     });
-    const { data: { subscription } } = db.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setIsAuthenticated(Boolean(session?.user));
     });
     return () => {
