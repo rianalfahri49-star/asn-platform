@@ -326,7 +326,7 @@ export default function SimulasiPage() {
                           return (
                             <div key={letter} className={"rounded-xl border px-3 py-2 text-sm " + (isCorrect ? "border-emerald-300 bg-emerald-50 text-emerald-900" : isSelected ? "border-rose-300 bg-rose-50 text-rose-900" : "border-slate-100 text-slate-600")}>
                               <span className="mr-2 font-black">{letter}.</span>{option}
-                              {isCorrect && <span className="ml-2 font-bold">· Jawaban benar</span>}
+                              {isCorrect && <span className="ml-2 font-bold">· Pilihan terbaik</span>}
                               {!isCorrect && isSelected && <span className="ml-2 font-bold">· Jawabanmu</span>}
                             </div>
                           );
