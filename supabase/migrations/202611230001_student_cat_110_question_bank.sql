@@ -35,6 +35,15 @@ WHERE NOT EXISTS (
   SELECT 1 FROM public.questions q WHERE q.question = i.question
 );
 
+-- Correct an ambiguous practice item so its conclusion has one defensible answer.
+UPDATE public.questions
+SET question = 'Sebelum R terdapat Q, sebelum Q terdapat P, dan sebelum P terdapat S. Siapa yang pasti berada sebelum P?',
+    options = '["Hanya T","S","Q","R dan T","Tidak ada"]'::jsonb,
+    correct_answer = 'B',
+    explanation = 'Urutan yang diketahui adalah S sebelum P, P sebelum Q, dan Q sebelum R. Karena itu S pasti berada sebelum P.'
+WHERE category = 'TIU'
+  AND question = 'Sebelum R terdapat Q, sebelum Q terdapat P, dan sebelum P terdapat S. Siapa yang pasti berada sebelum R?';
+
 CREATE OR REPLACE FUNCTION public.submit_exam_attempt(
   p_title text, p_category text, p_answers jsonb, p_duration_seconds integer
 )
