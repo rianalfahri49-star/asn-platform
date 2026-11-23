@@ -82,7 +82,7 @@ export default function LatihanPage() {
       active = false;
       subscription.unsubscribe();
     };
-  }, [db]);
+  }, [supabase]);
 
   useEffect(() => {
     if (!started || finished) return;
