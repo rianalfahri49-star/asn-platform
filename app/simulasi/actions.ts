@@ -118,6 +118,7 @@ export type ExamReviewItem = {
   selected_answer: string | null;
   correct_answer: string;
   explanation: string;
+  selected_score: number;
 };
 
 export type ExamReviewResult =
