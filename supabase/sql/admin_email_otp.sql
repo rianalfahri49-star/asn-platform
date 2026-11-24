@@ -139,6 +139,44 @@ $$;
 revoke all on function private.is_admin_email_otp_verified() from public, anon;
 grant execute on function private.is_admin_email_otp_verified() to authenticated;
 
+-- SECURITY DEFINER RPCs bypass table RLS, so explicitly enforce the OTP session here too.
+create or replace function public.get_admin_questions()
+returns table (
+  id uuid,
+  category text,
+  topic text,
+  question text,
+  options jsonb,
+  correct_answer text,
+  explanation text,
+  is_published boolean,
+  is_premium boolean,
+  created_at timestamptz,
+  updated_at timestamptz
+)
+language plpgsql
+stable
+security definer
+set search_path = ''
+as $function$
+begin
+  if coalesce((select auth.jwt() -> 'app_metadata' ->> 'role'), '') <> 'admin' then
+    raise exception 'Admin access required' using errcode = '42501';
+  end if;
+
+  if not private.is_admin_email_otp_verified() then
+    raise exception 'Verified admin session required' using errcode = '42501';
+  end if;
+
+  return query
+  select q.id, q.category, q.topic, q.question, q.options, q.correct_answer,
+         q.explanation, q.is_published, q.is_premium, q.created_at, q.updated_at
+  from public.questions q
+  order by q.created_at desc;
+end;
+$function$;
+
+
 -- Replace admin-only policies with OTP-gated equivalents.
 drop policy if exists "Admins can read all exam attempts" on public.exam_attempts;
 create policy "Admins can read all exam attempts"
