@@ -176,6 +176,9 @@ begin
 end;
 $function$;
 
+-- The SECURITY DEFINER RPC is callable only by signed-in users and enforces OTP internally.
+revoke all on function public.get_admin_questions() from public, anon;
+grant execute on function public.get_admin_questions() to authenticated;
 
 -- Replace admin-only policies with OTP-gated equivalents.
 drop policy if exists "Admins can read all exam attempts" on public.exam_attempts;
