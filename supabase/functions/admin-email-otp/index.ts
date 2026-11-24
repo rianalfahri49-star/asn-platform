@@ -116,6 +116,22 @@ Deno.serve(async (req: Request) => {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 
+  if (body.action === "status") {
+    const { data: verified, error: statusError } = await admin
+      .from("admin_verified_sessions")
+      .select("expires_at")
+      .eq("user_id", user.id)
+      .eq("session_id", sessionId)
+      .gt("expires_at", new Date().toISOString())
+      .maybeSingle();
+
+    if (statusError) {
+      console.error("OTP session status check failed", statusError);
+      return json({ error: "Verifikasi admin belum siap. Hubungi administrator sistem." }, 503);
+    }
+    return json({ verified: Boolean(verified) });
+  }
+
   if (body.action === "send") {
     const code = generateCode();
     const codeHash = await hashCode(code, user.id, sessionId, pepper);
