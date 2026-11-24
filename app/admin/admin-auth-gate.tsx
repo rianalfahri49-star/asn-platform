@@ -110,7 +110,7 @@ export default function AdminAuthGate({ client, user, onUserChange, onVerified }
       : "Kode verifikasi telah dikirim. Periksa kotak masuk dan folder spam.");
   }
 
-  async function verify(event: React.FormEvent<HTMLFormElement>) {
+  async function verify(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!/^\d{6}$/.test(code)) {
       setMessage("Masukkan kode OTP yang terdiri dari 6 digit.");
