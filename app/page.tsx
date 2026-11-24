@@ -61,7 +61,7 @@ export default function Home() {
             <p>Persiapkan dirimu menghadapi seleksi CPNS dengan materi terstruktur, latihan soal, simulasi CAT, dan evaluasi kemampuan dalam satu platform.</p>
             <div className="celadon-hero-buttons">
               <Link href="/masuk" className="celadon-button celadon-button-primary">Mulai perjalananmu <ArrowRight size={17} /></Link>
-              <a href="#fitur" className="celadon-button celadon-button-quiet">Jelajahi fitur</a>
+              <Link href="/contoh-soal" className="celadon-button celadon-button-quiet">Coba contoh soal</Link>
             </div>
             <div className="celadon-proof">
               <span><CheckCircle2 size={16} /> Belajar fleksibel</span>
