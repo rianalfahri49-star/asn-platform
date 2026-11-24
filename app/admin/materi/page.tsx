@@ -4,7 +4,7 @@ import {FormEvent,useCallback,useEffect,useMemo,useState} from "react";
 import {createBrowserClient} from "@supabase/ssr";
 import type {User} from "@supabase/supabase-js";
 import AdminAuthGate from "../admin-auth-gate";
-import {ArrowLeft,BookOpen,LogOut,Trash2} from "lucide-react";
+import {ArrowLeft,LogOut,Trash2} from "lucide-react";
 type Material={id:string;title:string;category:string;summary:string;content:string;is_published:boolean;is_premium:boolean;video_url:string|null};
 const blank={title:"",category:"TWK",summary:"",content:"",is_published:false,is_premium:false,video_url:""};
 export default function AdminMateriPage(){
