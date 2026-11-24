@@ -42,8 +42,8 @@ jobs:
       - name: Build release APK
         run: |
           flutter build apk --release \
-            --dart-define=SUPABASE_URL=https://placeholder.supabase.co \
-            --dart-define=SUPABASE_PUBLISHABLE_KEY=placeholder-public-key
+            --dart-define=SUPABASE_URL=https://xrkrzzfcyobrcauxtzaj.supabase.co \
+            --dart-define=SUPABASE_PUBLISHABLE_KEY=sb_publishable_elVeQbfD_Fs7OklKSWjQpw_4TuN9FDz
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
