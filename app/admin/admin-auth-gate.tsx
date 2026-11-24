@@ -29,6 +29,7 @@ async function functionError(error: unknown, data: unknown): Promise<string> {
 }
 
 export default function AdminAuthGate({ client, user, onUserChange, onVerified }: Props) {
+  const lastOtpRequestUserId = useRef<string | null>(null);
   const onUserChangeRef = useRef(onUserChange);
   const onVerifiedRef = useRef(onVerified);
   onUserChangeRef.current = onUserChange;
@@ -42,6 +43,7 @@ export default function AdminAuthGate({ client, user, onUserChange, onVerified }
 
   useEffect(() => {
     if (!user) {
+      lastOtpRequestUserId.current = null;
       setStep("login");
       return;
     }
@@ -52,6 +54,8 @@ export default function AdminAuthGate({ client, user, onUserChange, onVerified }
       setStep("login");
       return;
     }
+    if (lastOtpRequestUserId.current === user.id) return;
+    lastOtpRequestUserId.current = user.id;
     let cancelled = false;
     setStep("otp");
     setBusy(true);
