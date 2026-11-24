@@ -94,6 +94,11 @@ export default function Home() {
         <div className="celadon-container">
           <p>Satu platform untuk seluruh perjalanan persiapanmu</p>
           <div><span>Belajar</span><i></i><span>Berlatih</span><i></i><span>Simulasi</span><i></i><span>Evaluasi</span><i></i><span>Berkembang</span></div>
+          <div className="celadon-trust-stats" aria-label="Ringkasan konten belajar">
+            <div><strong>110</strong><span>soal latihan gratis</span></div>
+            <div><strong>13</strong><span>materi belajar</span></div>
+            <div><strong>3</strong><span>subtes SKD</span></div>
+          </div>
         </div>
       </section>
 
