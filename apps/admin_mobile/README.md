@@ -104,6 +104,6 @@ Catatan: email OTP khusus ini bukan Supabase Auth MFA AAL2 bawaan. Kebijakan RLS
 - Jika tabel sesi OTP `admin_verified_sessions` sudah dipasang, RPC direktori siswa juga memeriksa sesi OTP terverifikasi.
 - Menu konten dan laporan memerlukan migration platform, bank soal, premium access, serta SQL OTP/RLS admin yang sesuai.
 - Menu transaksi hanya membaca status dari database. Aplikasi tidak dapat mengubah status pembayaran; webhook penyedia pembayaran tetap menjadi sumber status.
-- Build CI memakai kredensial placeholder hanya untuk memeriksa kompilasi dan menghasilkan artifact uji. APK itu tidak dapat dipakai untuk login ke project produksi. Build produksi harus memakai URL dan publishable key project yang benar.
+- Workflow CI membangun APK dengan URL project dan publishable key publik Sukses CPNS. Publishable key memang dirancang untuk dipakai di klien; service-role key, Resend API key, dan OTP pepper tidak pernah dimasukkan ke APK. Login produksi tetap menunggu konfigurasi sender email, Edge Function, dan SQL OTP.
 - Perubahan akun (ban/unban, hapus user, ubah role) sengaja tidak disediakan dari aplikasi mobile sampai endpoint server-side dengan audit log dan kontrol izin disiapkan.
 - Pengeluaran OTP dan kenaikan penghitung percobaan memakai fungsi SQL atomik dengan advisory lock agar permintaan paralel tidak melewati cooldown, batas permintaan per akun (lintas sesi login), atau batas percobaan. Fungsi ini baru aktif setelah `supabase/sql/admin_email_otp.sql` diterapkan.
