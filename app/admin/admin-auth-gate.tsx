@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { SupabaseClient, User } from "@supabase/supabase-js";
 
 type Props = {
@@ -29,6 +29,10 @@ async function functionError(error: unknown, data: unknown): Promise<string> {
 }
 
 export default function AdminAuthGate({ client, user, onUserChange, onVerified }: Props) {
+  const onUserChangeRef = useRef(onUserChange);
+  const onVerifiedRef = useRef(onVerified);
+  onUserChangeRef.current = onUserChange;
+  onVerifiedRef.current = onVerified;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
@@ -43,7 +47,7 @@ export default function AdminAuthGate({ client, user, onUserChange, onVerified }
     }
     if (user.app_metadata?.role !== "admin") {
       void client.auth.signOut();
-      onUserChange(null);
+      onUserChangeRef.current(null);
       setMessage("Akun ini belum memiliki hak akses administrator.");
       setStep("login");
       return;
@@ -56,7 +60,7 @@ export default function AdminAuthGate({ client, user, onUserChange, onVerified }
       if (cancelled) return;
       if (!status.error && status.data?.verified === true) {
         setBusy(false);
-        onVerified(user);
+        onVerifiedRef.current(user);
         return;
       }
       const sent = await client.functions.invoke("admin-email-otp", { body: { action: "send" } });
@@ -69,7 +73,7 @@ export default function AdminAuthGate({ client, user, onUserChange, onVerified }
       }
     })();
     return () => { cancelled = true; };
-  }, [client, user, onUserChange, onVerified]);
+  }, [client, user]);
 
   async function login(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -87,7 +91,7 @@ export default function AdminAuthGate({ client, user, onUserChange, onVerified }
       return;
     }
     setPassword("");
-    onUserChange(data.user);
+    onUserChangeRef.current(data.user);
     setStep("otp");
     setMessage("Menyiapkan pengiriman kode verifikasi...");
   }
@@ -118,12 +122,12 @@ export default function AdminAuthGate({ client, user, onUserChange, onVerified }
       setMessage(await functionError(error, data));
       return;
     }
-    if (user) onVerified(user);
+    if (user) onVerifiedRef.current(user);
   }
 
   async function backToLogin() {
     await client.auth.signOut();
-    onUserChange(null);
+    onUserChangeRef.current(null);
     setCode("");
     setMessage("");
     setStep("login");
