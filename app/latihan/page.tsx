@@ -38,7 +38,7 @@ export default function LatihanPage() {
   const [started, setStarted] = useState(false);
   const [finished, setFinished] = useState(false);
   const [category, setCategory] = useState("SEMUA");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -157,7 +157,7 @@ export default function LatihanPage() {
             <h2 className="text-lg font-extrabold">Atur sesi latihan</h2>
             <div className="mt-4 flex flex-wrap gap-2">
               {["SEMUA", "TWK", "TIU", "TKP"].map((value) => (
-                <button key={value} onClick={() => { setCategory(value); setAnswers({}); setIndex(0); }} className={"rounded-full px-4 py-2 text-sm font-bold " + (category === value ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600")}>
+                <button key={value} onClick={() => { setLoading(true); setQuestions([]); setCategory(value); setAnswers({}); setIndex(0); }} className={"rounded-full px-4 py-2 text-sm font-bold " + (category === value ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600")}>
                   {value === "SEMUA" ? "Semua subtes" : value}
                 </button>
               ))}
