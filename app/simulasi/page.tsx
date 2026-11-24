@@ -52,7 +52,7 @@ export default function SimulasiPage() {
   const [remaining, setRemaining] = useState(0);
   const [started, setStarted] = useState(false);
   const [done, setDone] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -186,17 +186,18 @@ export default function SimulasiPage() {
             <div className="mt-5 grid gap-3 sm:grid-cols-3">
               <div className="rounded-2xl bg-blue-50 p-4">
                 <p className="text-xs text-blue-700">Durasi</p>
-                <p className="mt-1 text-2xl font-black text-blue-950">{Math.ceil(Math.min(MAX_LIMIT, questions.length * SECONDS_PER_QUESTION) / 60)} menit</p>
+                <p className="mt-1 text-2xl font-black text-blue-950">{loading ? "Memuat..." : `${Math.ceil(Math.min(MAX_LIMIT, questions.length * SECONDS_PER_QUESTION) / 60)} menit`}</p>
               </div>
               <div className="rounded-2xl bg-blue-50 p-4">
                 <p className="text-xs text-blue-700">Soal tersedia</p>
-                <p className="mt-1 text-2xl font-black text-blue-950">{questions.length}</p>
+                <p className="mt-1 text-2xl font-black text-blue-950">{loading ? "Memuat..." : questions.length}</p>
               </div>
               <div className="rounded-2xl bg-blue-50 p-4">
                 <p className="text-xs text-blue-700">Subtes</p>
                 <p className="mt-1 text-2xl font-black text-blue-950">TWK · TIU · TKP</p>
               </div>
             </div>
+            {!loading && !questions.length && <p className="mt-5 rounded-xl bg-amber-50 p-3 text-sm text-amber-800">Belum ada soal yang dapat dimuat. Silakan coba muat ulang halaman atau hubungi admin jika masalah berlanjut.</p>}
             <p className="mt-5 text-sm text-slate-500">
               Catatan: tersedia 110 soal latihan (30 TWK, 35 TIU, 45 TKP). TWK/TIU menggunakan 5 poin untuk jawaban tepat; TKP menggunakan bobot latihan 1–5. Skema ini adalah penilaian latihan internal, bukan perhitungan atau passing grade resmi BKN.
             </p>
