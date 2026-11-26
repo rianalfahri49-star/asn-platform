@@ -22,7 +22,7 @@ export default function AdminPage() {
   const fileRef=useRef<HTMLInputElement>(null);
 
   useEffect(()=>{ if(!supabase) return; supabase.auth.getUser().then(({data})=>{ const u=data.user; setUser(u); setIsAdmin(u?.app_metadata?.role==="admin"); }); },[supabase]);
-  const loadQuestions=useCallback(async()=>{ if(!supabase) return; const {data,error}=await supabase.rpc("get_admin_questions"); if(error){setMessage(error.message);return;} setQuestions((data||[]) as Question[]); },[supabase]);
+  const loadQuestions=useCallback(async()=>{ if(!supabase) return; const {data,error}=await supabase.from("questions").select("id,category,topic,question,options,correct_answer,explanation,is_published,is_premium").order("created_at",{ascending:false}); if(error){setMessage(error.message);return;} setQuestions((data||[]) as Question[]); },[supabase]);
   useEffect(()=>{if(isAdmin) void loadQuestions();},[isAdmin,loadQuestions]);
   async function login(e:FormEvent){e.preventDefault();if(!supabase)return;setBusy(true);setMessage("");const {data,error}=await supabase.auth.signInWithPassword({email,password});setBusy(false);if(error){setMessage(error.message);return;}setUser(data.user);setIsAdmin(data.user?.app_metadata?.role==="admin");}
   async function logout(){await supabase?.auth.signOut();setUser(null);setIsAdmin(false);setQuestions([]);}
