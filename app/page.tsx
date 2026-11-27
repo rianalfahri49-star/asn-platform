@@ -36,6 +36,7 @@ export default function Home() {
             <a href="#materi">Materi SKD</a>
             <Link href="/latihan">Latihan</Link>
             <Link href="/simulasi">Tryout CAT</Link>
+            <Link href="/paket#android-app">Unduh APK</Link>
             <Link href="/peringkat">Peringkat</Link>
           </nav>
           <div className="celadon-actions">
@@ -47,7 +48,7 @@ export default function Home() {
             <div className="celadon-mobile-panel">
               <a href="#fitur">Fitur</a><a href="#materi">Materi SKD</a>
               <Link href="/latihan">Latihan</Link><Link href="/simulasi">Tryout CAT</Link>
-              <Link href="/peringkat">Peringkat</Link><Link href="/masuk">Masuk / Daftar</Link>
+              <Link href="/paket#android-app">Unduh APK</Link><Link href="/peringkat">Peringkat</Link><Link href="/masuk">Masuk / Daftar</Link>
             </div>
           </details>
         </div>

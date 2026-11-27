@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, BookOpen, Check, Smartphone } from "lucide-react";
+import { ArrowLeft, BookOpen, Check, Download, Smartphone } from "lucide-react";
 
 const features = [
   "Akses materi belajar reguler CPNS dan PPPK",
@@ -60,15 +60,26 @@ export default function PaketPage() {
           </Link>
         </section>
 
-        <section className="mx-auto mt-6 max-w-xl rounded-2xl border border-slate-200 bg-slate-100 p-5">
+        <section id="android-app" className="mx-auto mt-6 max-w-xl rounded-2xl border border-slate-200 bg-slate-100 p-5">
           <div className="flex items-start gap-3">
             <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-slate-700">
               <Smartphone size={20} />
             </span>
-            <div>
-              <h2 className="font-bold text-slate-900">Paket Premium tersedia di aplikasi SuksesCPNS</h2>
+            <div className="min-w-0 flex-1">
+              <h2 className="font-bold text-slate-900">Aplikasi Android SuksesCPNS</h2>
               <p className="mt-1 text-sm leading-6 text-slate-600">
-                Website ini hanya menyediakan Paket Reguler. Jika membutuhkan fitur Premium, pengguna dapat menggunakan aplikasi SuksesCPNS.
+                Unduh aplikasi untuk belajar lewat perangkat Android. Paket Premium tersedia di aplikasi; website tetap menyediakan Paket Reguler.
+              </p>
+              <a
+                href="/downloads/suksescpns-android.apk"
+                download="suksescpns-android.apk"
+                className="mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 sm:w-auto"
+              >
+                <Download size={16} aria-hidden="true" />
+                Unduh APK Android
+              </a>
+              <p className="mt-3 text-xs leading-5 text-slate-500">
+                Versi uji coba (debug-signed), bukan rilis Play Store. Android dapat menampilkan peringatan saat pemasangan; diperlukan Android 8.0 atau lebih baru.
               </p>
             </div>
           </div>
