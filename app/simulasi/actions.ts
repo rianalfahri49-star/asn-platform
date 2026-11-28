@@ -107,3 +107,61 @@ export async function submitExamAction(
     return { success: false, error: "Terjadi kesalahan saat mengumpulkan ujian." };
   }
 }
+
+
+export type ExamReviewItem = {
+  question_id: string;
+  category: string;
+  topic: string;
+  question: string;
+  options: string[];
+  selected_answer: string | null;
+  correct_answer: string;
+  explanation: string;
+};
+
+export type ExamReviewResult =
+  | { success: true; items: ExamReviewItem[] }
+  | { success: false; error: string };
+
+export async function getExamReviewAction(attemptId: string): Promise<ExamReviewResult> {
+  try {
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(attemptId)) {
+      return { success: false, error: "ID hasil ujian tidak valid." };
+    }
+
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if (!url || !key) return { success: false, error: "Konfigurasi database belum tersedia." };
+
+    const cookieStore = await cookies();
+    const supabase = createServerClient(url, key, {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
+          } catch {
+            // Cookie writes can be unavailable in a Server Component context.
+          }
+        },
+      },
+    });
+
+    const { data: authData, error: authError } = await supabase.auth.getUser();
+    if (authError || !authData.user) return { success: false, error: "Silakan masuk untuk melihat pembahasan." };
+
+    const { data, error } = await supabase.rpc("get_exam_review", { p_attempt_id: attemptId });
+    if (error) {
+      console.error("get_exam_review failed:", error.message);
+      return { success: false, error: "Pembahasan belum dapat dimuat." };
+    }
+
+    return { success: true, items: (data || []) as ExamReviewItem[] };
+  } catch (error) {
+    console.error("getExamReviewAction unexpected error:", error);
+    return { success: false, error: "Terjadi kesalahan saat memuat pembahasan." };
+  }
+}
